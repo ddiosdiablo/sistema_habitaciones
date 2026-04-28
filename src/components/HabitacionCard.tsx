@@ -7,6 +7,7 @@ interface HabitacionCardProps {
   habitacion: Habitacion;
   cliente?: Cliente;
   estadia?: Estadia;
+  adminPassword?: string;
   onCheckIn?: () => void;
   onCheckOut?: () => void;
   onEdit?: () => void;
@@ -30,6 +31,7 @@ export const HabitacionCard = ({
   habitacion,
   cliente,
   estadia,
+  adminPassword,
   onCheckIn,
   onCheckOut,
   onEdit,
@@ -37,8 +39,32 @@ export const HabitacionCard = ({
   onChangeEstado,
 }: HabitacionCardProps) => {
   const [showMenu, setShowMenu] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [pendingEstado, setPendingEstado] = useState<Habitacion['estado'] | null>(null);
 
   const estados: Habitacion['estado'][] = ['disponible', 'ocupada', 'mantenimiento'];
+
+  const handleEstadoClick = (estado: Habitacion['estado']) => {
+    if (adminPassword) {
+      setPendingEstado(estado);
+      setShowPasswordModal(true);
+    } else {
+      onChangeEstado?.(estado);
+    }
+    setShowMenu(false);
+  };
+
+  const handlePasswordSubmit = () => {
+    if (passwordInput === adminPassword && pendingEstado && onChangeEstado) {
+      onChangeEstado(pendingEstado);
+      setShowPasswordModal(false);
+      setPasswordInput('');
+      setPendingEstado(null);
+    } else {
+      alert('Contraseña incorrecta');
+    }
+  };
 
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm hover:shadow-md transition-shadow">
@@ -78,10 +104,7 @@ export const HabitacionCard = ({
                   {estados.map((estado) => (
                     <button
                       key={estado}
-                      onClick={() => {
-                        onChangeEstado(estado);
-                        setShowMenu(false);
-                      }}
+                      onClick={() => handleEstadoClick(estado)}
                       className={`w-full px-3 py-2 text-left text-sm hover:bg-neutral-100 dark:hover:bg-neutral-700 ${
                         habitacion.estado === estado ? 'font-medium text-primary' : 'text-neutral-700 dark:text-neutral-200'
                       }`}
@@ -171,6 +194,46 @@ export const HabitacionCard = ({
           </button>
         )}
       </div>
+
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-sm w-full p-6">
+            <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+              Confirmar Cambio de Estado
+            </h3>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+              Ingrese la contraseña de administrador para cambiar el estado a "{estadoText[pendingEstado!]}".
+            </p>
+            <input
+              type="password"
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+              placeholder="Contraseña"
+              className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 mb-4"
+              autoFocus
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowPasswordModal(false);
+                  setPasswordInput('');
+                  setPendingEstado(null);
+                }}
+                className="flex-1 py-2 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handlePasswordSubmit}
+                className="flex-1 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg"
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -262,6 +262,7 @@ export const Habitaciones = () => {
               onChangeEstado={(estado) => {
                 updateHabitacion(habitacion.id, { estado });
               }}
+              adminPassword={config.contrasenaAdmin}
             />
           );
         })}
