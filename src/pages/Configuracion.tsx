@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { Save, RotateCcw } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 
 export const Configuracion = () => {
   const { config, updateConfig, clearTransacciones } = useAppStore();
+  const [redirect, setRedirect] = useState(false);
 
   const [formData, setFormData] = useState({
     nombre: config.nombre,
@@ -24,8 +26,12 @@ export const Configuracion = () => {
   const handleSave = () => {
     updateConfig(formData);
     setGuardado(true);
-    setTimeout(() => setGuardado(false), 2000);
+    setRedirect(true);
   };
+
+  if (redirect) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="space-y-6 max-w-2xl">
