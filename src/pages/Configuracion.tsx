@@ -16,6 +16,7 @@ export const Configuracion = () => {
     tariffMensualDefault: config.tariffMensualDefault,
     contrasenaAdmin: config.contrasenaAdmin || '',
     horaCheckout: config.horaCheckout || '13:00',
+    proximoNumeroRecibo: config.proximoNumeroRecibo,
   });
 
   const [guardado, setGuardado] = useState(false);
@@ -126,9 +127,13 @@ export const Configuracion = () => {
           <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
             Próximo N° de Recibo
           </label>
-          <p className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
-            {config.proximoNumeroRecibo}
-          </p>
+          <input
+            type="number"
+            value={formData.proximoNumeroRecibo}
+            onChange={(e) => setFormData({ ...formData, proximoNumeroRecibo: parseInt(e.target.value) || 1 })}
+            min={1}
+            className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
+          />
         </div>
       </div>
 
