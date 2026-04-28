@@ -11,11 +11,10 @@ export interface DatosRecibo {
   transaccion: Transaccion;
   fechaEntrada: string;
   fechaSalida: string;
-  dias?: number;
 }
 
 export const generarReciboPDF = (datos: DatosRecibo): void => {
-  const { config, cliente, habitacion, tipoAlquiler, transaccion, fechaEntrada, fechaSalida, dias } = datos;
+  const { config, cliente, habitacion, tipoAlquiler, transaccion, fechaEntrada, fechaSalida } = datos;
 
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -110,7 +109,7 @@ export const generarReciboPDF = (datos: DatosRecibo): void => {
 };
 
 export const generarReciboHTML = (datos: DatosRecibo): string => {
-  const { config, cliente, habitacion, tipoAlquiler, transaccion, fechaEntrada, fechaSalida, dias } = datos;
+  const { config, cliente, habitacion, tipoAlquiler, transaccion, fechaEntrada, fechaSalida } = datos;
 
   return `
     <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #000; background: #fff; color: #000;">

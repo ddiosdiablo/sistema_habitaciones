@@ -141,7 +141,6 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
             transaccion: transaccionReciente,
             fechaEntrada: fechaEntrada,
             fechaSalida: fechaSalida,
-            dias: tipoAlquiler === 'dia' ? diasEstadia : 1,
           };
           
           setDatosRecibo(datosDelRecibo);
