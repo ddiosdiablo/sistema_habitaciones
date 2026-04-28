@@ -80,10 +80,6 @@ export const generarReciboPDF = (datos: DatosRecibo): void => {
   doc.text(`Fecha Entrada: ${formatoFecha展示(fechaEntrada)}`, margin, yPos);
   yPos += 6;
   doc.text(`Fecha Salida: ${formatoFecha展示(fechaSalida)}`, margin, yPos);
-  if (dias) {
-    yPos += 6;
-    doc.text(`Duración: ${dias} día(s)`, margin, yPos);
-  }
   yPos += 15;
 
   doc.setFont('helvetica', 'bold');
@@ -135,7 +131,6 @@ export const generarReciboHTML = (datos: DatosRecibo): string => {
       <p style="color: #000;"><strong>Tipo:</strong> ${tipoAlquiler === 'dia' ? 'Alquiler por Día' : 'Alquiler Mensual'}</p>
       <p style="color: #000;"><strong>Entrada:</strong> ${formatoFecha展示(fechaEntrada)}</p>
       <p style="color: #000;"><strong>Salida:</strong> ${formatoFecha展示(fechaSalida)}</p>
-      ${dias ? `<p style="color: #000;"><strong>Duración:</strong> ${dias} día(s)</p>` : ''}
       <h4 style="margin: 10px 0 5px; color: #000;">IMPORTE</h4>
       <p style="font-size: 18px; color: #000;"><strong>Total:</strong> ${formatearMoneda(transaccion.monto)}</p>
       <p style="color: #000;"><strong>Método:</strong> ${transaccion.metodoPago.charAt(0).toUpperCase() + transaccion.metodoPago.slice(1)}</p>
