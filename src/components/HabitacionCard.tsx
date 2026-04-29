@@ -75,7 +75,7 @@ export const HabitacionCard = ({
           </div>
           <div className="min-w-0">
             <h3 className="font-semibold text-sm sm:text-base text-neutral-900 dark:text-neutral-100 truncate">
-              Hab. {habitacion.numero}
+              Habitación {habitacion.numero}
             </h3>
             <span
               className={`text-xs px-2 py-0.5 rounded-full ${

@@ -42,11 +42,17 @@ export const Habitaciones = () => {
     descripcion: '',
   });
 
-  const habitacionesFiltradas = habitaciones.filter((h) => {
-    if (filtroTipo !== 'todos' && h.tipo !== filtroTipo) return false;
-    if (filtroEstado !== 'todos' && h.estado !== filtroEstado) return false;
-    return true;
-  });
+  const habitacionesFiltradas = habitaciones
+    .filter((h) => {
+      if (filtroTipo !== 'todos' && h.tipo !== filtroTipo) return false;
+      if (filtroEstado !== 'todos' && h.estado !== filtroEstado) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      const numA = parseInt(a.numero) || 0;
+      const numB = parseInt(b.numero) || 0;
+      return numA - numB;
+    });
 
   const handleAddHabitacion = () => {
     if (!nuevaHabitacion.numero) {

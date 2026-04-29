@@ -167,7 +167,10 @@ export const Dashboard = () => {
           Habitaciones Recientes
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
-          {habitaciones.slice(0, 5).map((hab) => {
+          {habitaciones
+            .sort((a, b) => (parseInt(a.numero) || 0) - (parseInt(b.numero) || 0))
+            .slice(0, 5)
+            .map((hab) => {
             const estadia = estadias.find(
               (e) => e.habitacionId === hab.id && e.estado === 'activa'
             );
