@@ -12,6 +12,7 @@ import { useAppStore } from './store/appStore';
 
 export const App = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { darkMode, isLoading, loadFromSupabase } = useAppStore();
 
   useEffect(() => {
@@ -43,14 +44,19 @@ export const App = () => {
         <Sidebar
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+          mobileOpen={mobileMenuOpen}
+          onMobileClose={() => setMobileMenuOpen(false)}
         />
-        <TopBar sidebarCollapsed={sidebarCollapsed} />
+        <TopBar
+          sidebarCollapsed={sidebarCollapsed}
+          onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
+        />
         <main
           className={`pt-16 min-h-screen transition-all duration-300 ${
-            sidebarCollapsed ? 'pl-16' : 'pl-56'
+            sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-56'
           }`}
         >
-          <div className="p-6">
+          <div className="p-3 sm:p-6">
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/habitaciones" element={<Habitaciones />} />

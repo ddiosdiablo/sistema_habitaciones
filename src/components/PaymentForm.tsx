@@ -69,10 +69,10 @@ export const PaymentForm = ({ onClose }: PaymentFormProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800">
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl sm:max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-neutral-200 dark:border-neutral-800">
+          <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
             Registrar Pago
           </h2>
           <button
@@ -83,7 +83,7 @@ export const PaymentForm = ({ onClose }: PaymentFormProps) => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <form onSubmit={handleSubmit} className="p-3 sm:p-4 space-y-4">
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Buscar Cliente / Habitación
@@ -93,7 +93,7 @@ export const PaymentForm = ({ onClose }: PaymentFormProps) => {
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
               placeholder="Buscar por nombre, DNI o número..."
-              className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
             />
             {busqueda && (
               <div className="mt-2 max-h-32 overflow-y-auto border border-neutral-200 dark:border-neutral-700 rounded-lg">
@@ -130,17 +130,17 @@ export const PaymentForm = ({ onClose }: PaymentFormProps) => {
           </div>
 
           {estadiaSeleccionada && cliente && habitacion && (
-            <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
-              <h3 className="font-medium text-neutral-900 dark:text-neutral-100">
+            <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-3 sm:p-4">
+              <h3 className="font-medium text-sm text-neutral-900 dark:text-neutral-100">
                 {habitacion.numero} - {cliente.nombreCompleto}
               </h3>
-              <p className="text-sm text-neutral-500">
+              <p className="text-xs sm:text-sm text-neutral-500">
                 Saldo pendiente: {formatearMoneda(estadiaSeleccionada.saldoPendiente)}
               </p>
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Monto
@@ -188,14 +188,14 @@ export const PaymentForm = ({ onClose }: PaymentFormProps) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+              className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors text-sm"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading || !estadiaId}
-              className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
             >
               <DollarSign size={18} />
               {loading ? 'Registrando...' : 'Registrar Pago'}

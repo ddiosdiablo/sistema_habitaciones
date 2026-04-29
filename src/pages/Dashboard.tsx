@@ -24,36 +24,36 @@ export const Dashboard = () => {
   const estadiasActivas = estadias.filter((e) => e.estado === 'activa');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+        <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
           Dashboard
         </h1>
-        <p className="text-neutral-500 dark:text-neutral-400">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
           Resumen de tu negocio de alquiler
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">Habitaciones</span>
-            <BedDouble className="w-5 h-5 text-primary dark:text-primary-light" />
+            <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Habitaciones</span>
+            <BedDouble className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-light" />
           </div>
-          <div className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+          <div className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             {disponibles} / {habitaciones.length}
           </div>
           <div className="text-xs text-neutral-500 dark:text-neutral-400">
-            {ocupadas} ocupidas, {mantenimiento} mantenimiento
+            {ocupadas} ocupadas, {mantenimiento} mantenimiento
           </div>
         </div>
 
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">Clientes</span>
-            <Users className="w-5 h-5 text-primary dark:text-primary-light" />
+            <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Clientes</span>
+            <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-light" />
           </div>
-          <div className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+          <div className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             {clientes.length}
           </div>
           <div className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -61,22 +61,22 @@ export const Dashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">Ingresos Hoy</span>
-            <DollarSign className="w-5 h-5 text-primary dark:text-primary-light" />
+            <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Ingresos Hoy</span>
+            <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-light" />
           </div>
-          <div className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+          <div className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             {formatearMoneda(ingresosDia)}
           </div>
         </div>
 
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-neutral-500 dark:text-neutral-400">Ingresos Mes</span>
-            <Calendar className="w-5 h-5 text-primary dark:text-primary-light" />
+            <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Ingresos Mes</span>
+            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-light" />
           </div>
-          <div className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+          <div className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             {formatearMoneda(ingresosMes)}
           </div>
           <div className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -85,16 +85,16 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+            <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
               Ingresos
             </h2>
             <div className="flex gap-2">
               <button
                 onClick={() => setChartTipo('semanal')}
-                className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors ${
                   chartTipo === 'semanal'
                     ? 'bg-primary text-white'
                     : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
@@ -104,7 +104,7 @@ export const Dashboard = () => {
               </button>
               <button
                 onClick={() => setChartTipo('mensual')}
-                className={`px-3 py-1 text-sm rounded-lg transition-colors ${
+                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors ${
                   chartTipo === 'mensual'
                     ? 'bg-primary text-white'
                     : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
@@ -117,10 +117,10 @@ export const Dashboard = () => {
           <IngresosChart tipo={chartTipo} />
         </div>
 
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
-            <AlertCircle className="w-5 h-5 text-amber-500" />
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
+            <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
               Próximos Vencimientos
             </h2>
           </div>
@@ -133,16 +133,16 @@ export const Dashboard = () => {
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-medium text-neutral-900 dark:text-neutral-100">
+                      <p className="font-medium text-sm sm:text-base text-neutral-900 dark:text-neutral-100">
                         {item.cliente.nombreCompleto}
                       </p>
-                      <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                      <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
                         Hab {item.habitacion.numero} -{' '}
                         {item.estadia.tipo === 'dia' ? 'Diario' : 'Mensual'}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium text-amber-600 dark:text-amber-400">
+                      <p className="text-xs sm:text-sm font-medium text-amber-600 dark:text-amber-400">
                         {formatearMoneda(item.estadia.saldoPendiente)}
                       </p>
                       <p className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -162,11 +162,11 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
+        <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
           Habitaciones Recientes
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-3">
           {habitaciones.slice(0, 5).map((hab) => {
             const estadia = estadias.find(
               (e) => e.habitacionId === hab.id && e.estado === 'activa'
@@ -177,7 +177,7 @@ export const Dashboard = () => {
             return (
               <div
                 key={hab.id}
-                className={`p-3 rounded-lg border ${
+                className={`p-2 sm:p-3 rounded-lg border ${
                   hab.estado === 'disponible'
                     ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800'
                     : hab.estado === 'ocupada'
@@ -185,7 +185,7 @@ export const Dashboard = () => {
                     : 'bg-neutral-100 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700'
                 }`}
               >
-                <p className="font-medium text-neutral-900 dark:text-neutral-100">
+                <p className="font-medium text-sm text-neutral-900 dark:text-neutral-100">
                   Hab {hab.numero}
                 </p>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 capitalize">

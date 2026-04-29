@@ -43,7 +43,6 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
   const [mostrarRecibo, setMostrarRecibo] = useState(false);
   const [datosRecibo, setDatosRecibo] = useState<DatosRecibo | null>(null);
 
-  // Calcular automáticamente cuando cambian los días o el tipo
   useEffect(() => {
     if (tipoAlquiler === 'dia') {
       const tarifaDiaria = config.tarifaDiariaDefault;
@@ -160,11 +159,11 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800">
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-            Registro Check-in - Hab {habitacion.numero}
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl sm:max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-neutral-200 dark:border-neutral-800">
+          <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+            Check-in - Hab {habitacion.numero}
           </h2>
           <button
             onClick={onClose}
@@ -174,7 +173,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <form onSubmit={handleSubmit} className="p-3 sm:p-4 space-y-4">
           <div className="flex gap-2 mb-4">
             <button
               type="button"
@@ -185,7 +184,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
                   : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
               }`}
             >
-              Cliente Existente
+              Existente
             </button>
             <button
               type="button"
@@ -196,7 +195,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
                   : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
               }`}
             >
-              Nuevo Cliente
+              Nuevo
             </button>
           </div>
 
@@ -216,7 +215,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
                   className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                     DNI *
@@ -246,7 +245,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                     Correo
@@ -287,10 +286,10 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
                 <div className="p-3 bg-primary/10 rounded-lg border border-primary/30">
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="font-medium text-neutral-900 dark:text-neutral-100">
+                      <p className="font-medium text-sm text-neutral-900 dark:text-neutral-100">
                         {clientes.find(c => c.id === clienteSeleccionado)?.nombreCompleto}
                       </p>
-                      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                      <p className="text-xs text-neutral-600 dark:text-neutral-400">
                         DNI: {clientes.find(c => c.id === clienteSeleccionado)?.dni} | 
                         Telf: {clientes.find(c => c.id === clienteSeleccionado)?.telefono}
                       </p>
@@ -311,7 +310,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
                     placeholder="Buscar por nombre o DNI..."
-                    className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
                   />
                   {busqueda && (
                     <div className="mt-2 max-h-32 overflow-y-auto border border-neutral-200 dark:border-neutral-700 rounded-lg">
@@ -391,7 +390,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Fecha Entrada
@@ -428,7 +427,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Método de Pago
@@ -474,14 +473,14 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+              className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors text-sm"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm"
             >
               {loading ? 'Registrando...' : 'Confirmar Check-in'}
             </button>
@@ -490,40 +489,40 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
       </div>
 
       {showSuccess && datosRecibo && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl sm:max-w-md w-full p-4 sm:p-6">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">✓</span>
               </div>
-              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+              <h2 className="text-lg sm:text-xl font-semibold text-neutral-900 dark:text-neutral-100">
                 Check-in Completado
               </h2>
-              <p className="text-neutral-500 dark:text-neutral-400 mt-1">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
                 Recibo N°: {datosRecibo.transaccion.numeroRecibo}
               </p>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => {
                   setShowSuccess(false);
                   onClose();
                 }}
-                className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors text-sm"
               >
                 Cerrar
               </button>
               <button
                 onClick={() => setMostrarRecibo(true)}
-                className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2 text-sm"
               >
                 <Eye size={18} />
                 Ver Recibo
               </button>
               <button
                 onClick={() => generarReciboPDF(datosRecibo)}
-                className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
               >
                 <Download size={18} />
                 PDF

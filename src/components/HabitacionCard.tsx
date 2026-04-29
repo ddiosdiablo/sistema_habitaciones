@@ -67,15 +67,15 @@ export const HabitacionCard = ({
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <BedDouble className="w-5 h-5 text-primary dark:text-primary-light" />
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <BedDouble className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-light" />
           </div>
-          <div>
-            <h3 className="font-semibold text-neutral-900 dark:text-neutral-100">
-              Habitación {habitacion.numero}
+          <div className="min-w-0">
+            <h3 className="font-semibold text-sm sm:text-base text-neutral-900 dark:text-neutral-100 truncate">
+              Hab. {habitacion.numero}
             </h3>
             <span
               className={`text-xs px-2 py-0.5 rounded-full ${
@@ -86,7 +86,7 @@ export const HabitacionCard = ({
             </span>
           </div>
         </div>
-        <div className="flex gap-1 relative">
+        <div className="flex gap-1 relative flex-shrink-0">
           {(onEdit || onDelete || onChangeEstado) && (
             <button
               onClick={() => setShowMenu(!showMenu)}
@@ -145,19 +145,19 @@ export const HabitacionCard = ({
       </div>
 
       {habitacion.descripcion && (
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
+        <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mb-3">
           {habitacion.descripcion}
         </p>
       )}
 
-      <div className="space-y-1.5 mb-4">
-        <div className="flex justify-between text-sm">
+      <div className="space-y-1.5 mb-3 sm:mb-4">
+        <div className="flex justify-between text-xs sm:text-sm">
           <span className="text-neutral-500 dark:text-neutral-400">Diaria</span>
           <span className="font-medium text-neutral-900 dark:text-neutral-100">
             {formatearMoneda(habitacion.tarifaDiaria)}
           </span>
         </div>
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between text-xs sm:text-sm">
           <span className="text-neutral-500 dark:text-neutral-400">Mensual</span>
           <span className="font-medium text-neutral-900 dark:text-neutral-100">
             {formatearMoneda(habitacion.tariffMensual)}
@@ -167,7 +167,7 @@ export const HabitacionCard = ({
 
       {cliente && estadia && (
         <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800">
-          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
+          <p className="text-xs sm:text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
             {cliente.nombreCompleto}
           </p>
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -180,7 +180,7 @@ export const HabitacionCard = ({
         {habitacion.estado === 'disponible' && onCheckIn && (
           <button
             onClick={onCheckIn}
-            className="flex-1 py-2 px-3 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg transition-colors"
+            className="flex-1 py-2 px-3 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-medium rounded-lg transition-colors"
           >
             Check-in
           </button>
@@ -188,7 +188,7 @@ export const HabitacionCard = ({
         {habitacion.estado === 'ocupada' && onCheckOut && (
           <button
             onClick={onCheckOut}
-            className="flex-1 py-2 px-3 bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-sm font-medium rounded-lg transition-colors"
+            className="flex-1 py-2 px-3 bg-neutral-200 dark:bg-neutral-800 hover:bg-neutral-300 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-xs sm:text-sm font-medium rounded-lg transition-colors"
           >
             Check-out
           </button>
@@ -197,11 +197,11 @@ export const HabitacionCard = ({
 
       {showPasswordModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-sm w-full p-6">
-            <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-sm w-full p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
               Confirmar Cambio de Estado
             </h3>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+            <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mb-4">
               Ingrese la contraseña de administrador para cambiar el estado a "{estadoText[pendingEstado!]}".
             </p>
             <input
@@ -220,13 +220,13 @@ export const HabitacionCard = ({
                   setPasswordInput('');
                   setPendingEstado(null);
                 }}
-                className="flex-1 py-2 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700"
+                className="flex-1 py-2 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 text-sm"
               >
                 Cancelar
               </button>
               <button
                 onClick={handlePasswordSubmit}
-                className="flex-1 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg"
+                className="flex-1 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm"
               >
                 Confirmar
               </button>

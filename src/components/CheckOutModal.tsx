@@ -90,10 +90,10 @@ const [montoPagado, setMontoPagado] = useState(estadia.totalPagado);
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-neutral-800">
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl sm:max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-neutral-200 dark:border-neutral-800">
+          <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
             Check-out - Hab {habitacion.numero}
           </h2>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800">
@@ -101,15 +101,15 @@ const [montoPagado, setMontoPagado] = useState(estadia.totalPagado);
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
-            <h3 className="font-medium text-neutral-900 dark:text-neutral-100 mb-2">
+        <form onSubmit={handleSubmit} className="p-3 sm:p-4 space-y-4">
+          <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-3 sm:p-4">
+            <h3 className="font-medium text-sm sm:text-base text-neutral-900 dark:text-neutral-100 mb-2">
               {cliente.nombreCompleto}
             </h3>
-            <p className="text-sm text-neutral-500">
+            <p className="text-xs sm:text-sm text-neutral-500">
               DNI: {cliente.dni} | Tel: {cliente.telefono}
             </p>
-            <p className="text-sm text-neutral-500">
+            <p className="text-xs sm:text-sm text-neutral-500">
               Entrada: {estadia.fechaEntrada} | Tipo:{' '}
               {estadia.tipo === 'dia' ? 'Diario' : 'Mensual'}
             </p>
@@ -127,7 +127,7 @@ const [montoPagado, setMontoPagado] = useState(estadia.totalPagado);
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Días utilizados
@@ -153,25 +153,25 @@ const [montoPagado, setMontoPagado] = useState(estadia.totalPagado);
             </div>
           </div>
 
-          <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4 space-y-2">
+          <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-3 sm:p-4 space-y-2">
             <div className="flex justify-between">
-              <span className="text-neutral-600 dark:text-neutral-400">Total:</span>
-              <span className="font-medium text-neutral-900 dark:text-neutral-100">
+              <span className="text-sm text-neutral-600 dark:text-neutral-400">Total:</span>
+              <span className="font-medium text-sm text-neutral-900 dark:text-neutral-100">
                 {formatearMoneda(totalCalibrado)}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-neutral-600 dark:text-neutral-400">Pagado:</span>
-              <span className="font-medium text-neutral-900 dark:text-neutral-100">
+              <span className="text-sm text-neutral-600 dark:text-neutral-400">Pagado:</span>
+              <span className="font-medium text-sm text-neutral-900 dark:text-neutral-100">
                 {formatearMoneda(montoPagado)}
               </span>
             </div>
             <div className="flex justify-between border-t border-neutral-200 dark:border-neutral-700 pt-2">
-              <span className="text-neutral-600 dark:text-neutral-400">
+              <span className="text-sm text-neutral-600 dark:text-neutral-400">
                 {saldoPendiente < 0 ? 'Crédito a favor:' : 'Saldo:'}
               </span>
               <span
-                className={`font-medium ${
+                className={`font-medium text-sm ${
                   saldoPendiente > 0
                     ? 'text-red-600 dark:text-red-400'
                     : 'text-green-600 dark:text-green-400'
@@ -182,7 +182,7 @@ const [montoPagado, setMontoPagado] = useState(estadia.totalPagado);
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Monto Recibido
@@ -228,14 +228,14 @@ const [montoPagado, setMontoPagado] = useState(estadia.totalPagado);
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+              className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors text-sm"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors disabled:opacity-50"
+              className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm"
             >
               {loading ? 'Confirmando...' : 'Confirmar Salida'}
             </button>

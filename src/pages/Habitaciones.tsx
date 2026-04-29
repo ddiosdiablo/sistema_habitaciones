@@ -68,32 +68,32 @@ export const Habitaciones = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+          <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             Habitaciones
           </h1>
-          <p className="text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Gestiona tus habitaciones
           </p>
         </div>
         <button
           onClick={() => setShowAddForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors text-sm"
         >
           <Plus size={18} />
           Nueva Habitación
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2 sm:gap-3">
         <div className="flex items-center gap-2">
           <Filter size={16} className="text-neutral-500" />
           <select
             value={filtroTipo}
             onChange={(e) => setFiltroTipo(e.target.value as TipoAlquiler | 'todos')}
-            className="px-3 py-1.5 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm"
+            className="px-2 sm:px-3 py-1.5 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-xs sm:text-sm"
           >
             <option value="todos">Todos los tipos</option>
             <option value="dia">Diario</option>
@@ -103,7 +103,7 @@ export const Habitaciones = () => {
         <select
           value={filtroEstado}
           onChange={(e) => setFiltroEstado(e.target.value as EstadoHabitacion | 'todos')}
-          className="px-3 py-1.5 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm"
+          className="px-2 sm:px-3 py-1.5 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-xs sm:text-sm"
         >
           <option value="todos">Todos los estados</option>
           <option value="disponible">Disponible</option>
@@ -114,8 +114,8 @@ export const Habitaciones = () => {
 
       {showAddForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-md w-full p-6">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl sm:max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
               Nueva Habitación
             </h2>
             <div className="space-y-4">
@@ -206,13 +206,13 @@ export const Habitaciones = () => {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowAddForm(false)}
-                className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700"
+                className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 text-sm"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleAddHabitacion}
-                className="flex-1 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg"
+                className="flex-1 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm"
               >
                 Agregar
               </button>
@@ -221,7 +221,7 @@ export const Habitaciones = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
         {habitacionesFiltradas.map((habitacion) => {
           const estadia = getEstadiaActivaByHabitacion(habitacion.id);
           const cliente = clientes.find((c) => c.id === estadia?.clienteId);
@@ -269,7 +269,7 @@ export const Habitaciones = () => {
       </div>
 
       {habitacionesFiltradas.length === 0 && (
-        <div className="text-center py-12 text-neutral-500 dark:text-neutral-400">
+        <div className="text-center py-8 text-neutral-500 dark:text-neutral-400">
           No hay habitaciones que coincidan con los filtros
         </div>
       )}
@@ -283,8 +283,8 @@ export const Habitaciones = () => {
 
       {showEditForm && editHabitacion && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-md w-full p-6">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl sm:max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
               Editar Habitación {editHabitacion.numero}
             </h2>
             <div className="space-y-4">
@@ -367,7 +367,7 @@ export const Habitaciones = () => {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowEditForm(false)}
-                className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700"
+                className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 text-sm"
               >
                 Cancelar
               </button>
@@ -380,7 +380,7 @@ export const Habitaciones = () => {
                   updateHabitacion(editHabitacion.id, editFormData);
                   setShowEditForm(false);
                 }}
-                className="flex-1 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg"
+                className="flex-1 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm"
               >
                 Guardar
               </button>

@@ -34,18 +34,18 @@ export const Configuracion = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-4 sm:space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+        <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
           Configuración
         </h1>
-        <p className="text-neutral-500 dark:text-neutral-400">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
           Configura tu negocio
         </p>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
           Datos del Negocio
         </h2>
 
@@ -73,7 +73,7 @@ export const Configuracion = () => {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Teléfono
@@ -99,8 +99,8 @@ export const Configuracion = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
           Configuración de Recibos
         </h2>
 
@@ -143,12 +143,12 @@ export const Configuracion = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
           Tarifas por Defecto
         </h2>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
               Tarifa Diaria Default
@@ -189,11 +189,11 @@ export const Configuracion = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
           Eliminar Ingresos
         </h2>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+        <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
           Borra solo las transacciones (ingresos) registradas. Los clientes y habitaciones no se eliminan.
         </p>
         <button
@@ -202,15 +202,15 @@ export const Configuracion = () => {
               await clearTransacciones();
             }
           }}
-          className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 rounded-lg transition-colors text-sm"
         >
           <RotateCcw size={18} />
           Borrar Ingresos
         </button>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-6 space-y-6">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
           Seguridad
         </h2>
 
@@ -231,10 +231,10 @@ export const Configuracion = () => {
         </div>
       </div>
 
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-end">
         <button
           onClick={handleSave}
-          className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 sm:px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors text-sm"
         >
           <Save size={18} />
           {guardado ? 'Guardado!' : 'Guardar Cambios'}

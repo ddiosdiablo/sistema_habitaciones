@@ -54,104 +54,104 @@ export const Ingresos = () => {
     .reduce((sum, t) => sum + t.monto, 0);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+          <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             Ingresos
           </h1>
-          <p className="text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Controla tus ingresos
           </p>
         </div>
         <button
           onClick={() => setShowPaymentForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors text-sm"
         >
           <DollarSign size={18} />
           Registrar Pago
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">Hoy</p>
-          <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
+          <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Hoy</p>
+          <p className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-neutral-100">
             {formatearMoneda(getIngresosDiarios(new Date().toISOString().split('T')[0]))}
           </p>
         </div>
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">Esta Semana</p>
-          <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
+          <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Esta Semana</p>
+          <p className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-neutral-100">
             {formatearMoneda(getIngresosSemanales(new Date().toISOString().split('T')[0], new Date().toISOString().split('T')[0]))}
           </p>
         </div>
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">Este Mes</p>
-          <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
+          <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Este Mes</p>
+          <p className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-neutral-100">
             {formatearMoneda(getIngresosMensuales(new Date().getFullYear(), new Date().getMonth() + 1))}
           </p>
         </div>
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">Este Año</p>
-          <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
+          <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Este Año</p>
+          <p className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-neutral-100">
             {formatearMoneda(getIngresosAnuales(new Date().getFullYear()))}
           </p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
-        <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
+        <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
           Gráfico de Ingresos
         </h2>
         <IngresosChart tipo="mensual" />
       </div>
 
       <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
-        <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 flex flex-wrap gap-3 items-center justify-between">
-          <div className="flex flex-wrap gap-3 items-center">
+        <div className="p-3 sm:p-4 border-b border-neutral-200 dark:border-neutral-800 flex flex-col gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3 items-center">
             <Filter size={16} className="text-neutral-500" />
             <input
               type="date"
               value={filtroFechaInicio}
               onChange={(e) => setFiltroFechaInicio(e.target.value)}
-              className="px-3 py-1.5 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm"
+              className="px-2 sm:px-3 py-1.5 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-xs sm:text-sm"
             />
-            <span className="text-neutral-500">-</span>
+            <span className="text-neutral-500 hidden sm:inline">-</span>
             <input
               type="date"
               value={filtroFechaFin}
               onChange={(e) => setFiltroFechaFin(e.target.value)}
-              className="px-3 py-1.5 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm"
+              className="px-2 sm:px-3 py-1.5 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-xs sm:text-sm"
             />
             <select
               value={filtroTipo}
               onChange={(e) => setFiltroTipo(e.target.value)}
-              className="px-3 py-1.5 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm"
+              className="px-2 sm:px-3 py-1.5 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-xs sm:text-sm"
             >
-              <option value="todos">Todos los tipos</option>
+              <option value="todos">Todos</option>
               <option value="checkin">Check-in</option>
               <option value="checkout">Check-out</option>
               <option value="pago">Pago</option>
               <option value="pago_parcial">Pago Parcial</option>
             </select>
           </div>
-          <div className="flex items-center gap-3">
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
               Total: <span className="font-semibold text-neutral-900 dark:text-neutral-100">{formatearMoneda(totalFiltrado)}</span>
             </p>
             <button
               onClick={handleExportCSV}
-              className="flex items-center gap-2 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-sm transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-xs sm:text-sm transition-colors"
             >
               <Download size={16} />
-              Exportar
+              <span className="hidden sm:inline">Exportar</span>
             </button>
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[800px]">
             <thead className="bg-neutral-50 dark:bg-neutral-800">
               <tr>
                 <th className="px-4 py-3 text-left text-sm font-medium text-neutral-500 dark:text-neutral-400">

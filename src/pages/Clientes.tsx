@@ -52,19 +52,19 @@ export const Clientes = () => {
   const historialEstadias = verHistorial ? getEstadiasByCliente(verHistorial.id) : [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+          <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             Clientes
           </h1>
-          <p className="text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Administra tus clientes
           </p>
         </div>
         <button
           onClick={() => setShowAddForm(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors text-sm"
         >
           <Plus size={18} />
           Nuevo Cliente
@@ -78,13 +78,13 @@ export const Clientes = () => {
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
           placeholder="Buscar por nombre o DNI..."
-          className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
+          className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 text-sm"
         />
       </div>
 
       <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[600px]">
             <thead className="bg-neutral-50 dark:bg-neutral-800">
               <tr>
                 <th className="px-4 py-3 text-left text-sm font-medium text-neutral-500 dark:text-neutral-400">
@@ -169,8 +169,8 @@ export const Clientes = () => {
 
       {showAddForm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-md w-full p-6">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl sm:max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
               Nuevo Cliente
             </h2>
             <div className="space-y-4">
@@ -187,7 +187,7 @@ export const Clientes = () => {
                   className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                     DNI *
@@ -245,13 +245,13 @@ export const Clientes = () => {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowAddForm(false)}
-                className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700"
+                className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 text-sm"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleAddCliente}
-                className="flex-1 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg"
+                className="flex-1 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm"
               >
                 Guardar
               </button>
@@ -262,8 +262,8 @@ export const Clientes = () => {
 
       {clienteEditando && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-md w-full p-6">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl sm:max-w-md w-full p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+            <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
               Editar Cliente
             </h2>
             <div className="space-y-4">
@@ -280,7 +280,7 @@ export const Clientes = () => {
                   className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                     DNI *
@@ -338,13 +338,13 @@ export const Clientes = () => {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setClienteEditando(null)}
-                className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700"
+                className="flex-1 py-2.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 text-sm"
               >
                 Cancelar
               </button>
               <button
                 onClick={handleUpdateCliente}
-                className="flex-1 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg"
+                className="flex-1 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm"
               >
                 Guardar
               </button>
@@ -355,11 +355,11 @@ export const Clientes = () => {
 
       {verHistorial && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl sm:max-w-lg w-full p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
               Historial - {verHistorial.nombreCompleto}
             </h2>
-            <p className="text-sm text-neutral-500 mb-4">
+            <p className="text-xs sm:text-sm text-neutral-500 mb-4">
               DNI: {verHistorial.dni} | Tel: {verHistorial.telefono}
             </p>
 
@@ -380,16 +380,16 @@ export const Clientes = () => {
                     >
                       <div className="flex justify-between">
                         <div>
-                          <p className="font-medium text-neutral-900 dark:text-neutral-100">
+                          <p className="font-medium text-sm text-neutral-900 dark:text-neutral-100">
                             Habitación {habitacion?.numero}
                           </p>
-                          <p className="text-sm text-neutral-500">
+                          <p className="text-xs sm:text-sm text-neutral-500">
                             {estadia.tipo === 'dia' ? 'Diario' : 'Mensual'} |{' '}
                             {estadia.estado === 'activa' ? 'Activa' : 'Finalizada'}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium text-neutral-900 dark:text-neutral-100">
+                          <p className="font-medium text-sm text-neutral-900 dark:text-neutral-100">
                             {formatearMoneda(estadia.tarifaAplicada)}
                           </p>
                           <p className="text-xs text-neutral-500">
@@ -412,7 +412,7 @@ export const Clientes = () => {
 
             <button
               onClick={() => setVerHistorial(null)}
-              className="w-full mt-4 py-2.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700"
+              className="w-full mt-4 py-2.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 text-sm"
             >
               Cerrar
             </button>
