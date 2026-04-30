@@ -52,6 +52,8 @@ CREATE TABLE IF NOT EXISTS estadias (
   fechaEntrada DATE NOT NULL,
   fechaSalidaEstimada DATE,
   fechaSalidaReal DATE,
+  tarifaOriginal DECIMAL(10,2) DEFAULT 0,
+  descuento DECIMAL(10,2) DEFAULT 0,
   tarifaAplicada DECIMAL(10,2) NOT NULL,
   totalPagado DECIMAL(10,2) DEFAULT 0,
   saldoPendiente DECIMAL(10,2) DEFAULT 0,

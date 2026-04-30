@@ -6,6 +6,7 @@ import { fechaHoy, fechaMasDias, fechaMasMeses } from '../utils/fechas';
 import { generarReciboPDF } from '../utils/generarReciboPDF';
 import { VistaPreviaRecibo } from './VistaPreviaRecibo';
 import type { DatosRecibo } from '../utils/generarReciboPDF';
+import { formatearMoneda } from '../utils/formatearMoneda';
 
 interface CheckInFormProps {
   habitacion: Habitacion;
@@ -28,6 +29,10 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
   
   const [tipoAlquiler, setTipoAlquiler] = useState<TipoAlquiler>(habitacion.tipo === 'mes' ? 'mes' : 'dia');
   const [diasEstadia, setDiasEstadia] = useState(1);
+  const [tarifaOriginal, setTarifaOriginal] = useState(
+    tipoAlquiler === 'dia' ? config.tarifaDiariaDefault : config.tariffMensualDefault
+  );
+  const [descuento, setDescuento] = useState(0);
   const [tarifa, setTarifa] = useState(
     tipoAlquiler === 'dia' ? config.tarifaDiariaDefault : config.tariffMensualDefault
   );
@@ -46,7 +51,9 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
   useEffect(() => {
     if (tipoAlquiler === 'dia') {
       const tarifaDiaria = config.tarifaDiariaDefault;
-      const nuevaTarifa = tarifaDiaria * diasEstadia;
+      const nuevaTarifaOriginal = tarifaDiaria * diasEstadia;
+      setTarifaOriginal(nuevaTarifaOriginal);
+      const nuevaTarifa = nuevaTarifaOriginal - descuento;
       setTarifa(nuevaTarifa);
       if (estaPagado) {
         setMontoPagado(nuevaTarifa);
@@ -54,9 +61,11 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
       setFechaSalida(fechaMasDias(diasEstadia, fechaEntrada));
     } else {
       const tarifaMensual = config.tariffMensualDefault;
-      setTarifa(tarifaMensual);
+      setTarifaOriginal(tarifaMensual);
+      const nuevaTarifa = tarifaMensual - descuento;
+      setTarifa(nuevaTarifa);
       if (estaPagado) {
-        setMontoPagado(tarifaMensual);
+        setMontoPagado(nuevaTarifa);
       }
       setFechaSalida(fechaMasMeses(1, fechaEntrada));
     }
@@ -107,6 +116,8 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
         tipo: tipoAlquiler,
         fechaEntrada,
         fechaSalidaEstimada: fechaSalida,
+        tarifaOriginal,
+        descuento,
         tarifaAplicada: tarifa,
         totalPagado: estaPagado ? montoPagado : 0,
         saldoPendiente: estaPagado ? 0 : tarifa - montoPagado,
@@ -140,6 +151,8 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
             transaccion: transaccionReciente,
             fechaEntrada: fechaEntrada,
             fechaSalida: fechaSalida,
+            tarifaOriginal,
+            descuento,
           };
           
           setDatosRecibo(datosDelRecibo);
@@ -417,15 +430,53 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-              Tarifa
+              Tarifa Original
             </label>
             <input
               type="number"
-              value={tarifa}
-              onChange={(e) => setTarifa(parseFloat(e.target.value) || 0)}
+              value={tarifaOriginal}
+              onChange={(e) => {
+                const nuevaOriginal = parseFloat(e.target.value) || 0;
+                setTarifaOriginal(nuevaOriginal);
+                setTarifa(nuevaOriginal - descuento);
+              }}
               className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+              Descuento
+            </label>
+            <input
+              type="number"
+              min="0"
+              value={descuento}
+              onChange={(e) => {
+                const nuevoDescuento = parseFloat(e.target.value) || 0;
+                setDescuento(nuevoDescuento);
+                setTarifa(tarifaOriginal - nuevoDescuento);
+              }}
+              className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
+
+          {descuento > 0 && (
+            <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-neutral-600 dark:text-neutral-400">Tarifa original:</span>
+                <span className="text-neutral-900 dark:text-neutral-100 line-through">{formatearMoneda(tarifaOriginal)}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-green-600 dark:text-green-400">Descuento:</span>
+                <span className="text-green-600 dark:text-green-400">-{formatearMoneda(descuento)}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm font-semibold border-t border-green-200 dark:border-green-800 pt-2 mt-2">
+                <span className="text-neutral-900 dark:text-neutral-100">Tarifa final:</span>
+                <span className="text-neutral-900 dark:text-neutral-100">{formatearMoneda(tarifa)}</span>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>

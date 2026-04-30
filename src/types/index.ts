@@ -31,6 +31,8 @@ export interface Estadia {
   fechaEntrada: string;
   fechaSalidaEstimada: string;
   fechaSalidaReal?: string;
+  tarifaOriginal: number;
+  descuento: number;
   tarifaAplicada: number;
   totalPagado: number;
   saldoPendiente: number;

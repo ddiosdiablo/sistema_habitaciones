@@ -11,10 +11,12 @@ export interface DatosRecibo {
   transaccion: Transaccion;
   fechaEntrada: string;
   fechaSalida: string;
+  tarifaOriginal?: number;
+  descuento?: number;
 }
 
 export const generarReciboPDF = (datos: DatosRecibo): void => {
-  const { config, cliente, habitacion, tipoAlquiler, transaccion, fechaEntrada, fechaSalida } = datos;
+  const { config, cliente, habitacion, tipoAlquiler, transaccion, fechaEntrada, fechaSalida, tarifaOriginal, descuento } = datos;
 
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -85,12 +87,26 @@ export const generarReciboPDF = (datos: DatosRecibo): void => {
   doc.text('IMPORTE', margin, yPos);
   yPos += 8;
 
-  doc.setFontSize(12);
-  doc.text(`Total: ${formatearMoneda(transaccion.monto)}`, margin, yPos);
-  yPos += 10;
-
-  doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
+  if (tarifaOriginal && descuento && descuento > 0) {
+    doc.setFontSize(10);
+    doc.text(`Tarifa original: ${formatearMoneda(tarifaOriginal)}`, margin, yPos);
+    yPos += 6;
+    doc.text(`Descuento: -${formatearMoneda(descuento)}`, margin, yPos);
+    yPos += 6;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text(`Total: ${formatearMoneda(transaccion.monto)}`, margin, yPos);
+    yPos += 10;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+  } else {
+    doc.setFontSize(12);
+    doc.text(`Total: ${formatearMoneda(transaccion.monto)}`, margin, yPos);
+    yPos += 10;
+    doc.setFontSize(10);
+  }
+
   doc.text(`Método de pago: ${transaccion.metodoPago.charAt(0).toUpperCase() + transaccion.metodoPago.slice(1)}`, margin, yPos);
   yPos += 10;
 
@@ -109,7 +125,7 @@ export const generarReciboPDF = (datos: DatosRecibo): void => {
 };
 
 export const generarReciboHTML = (datos: DatosRecibo): string => {
-  const { config, cliente, habitacion, tipoAlquiler, transaccion, fechaEntrada, fechaSalida } = datos;
+  const { config, cliente, habitacion, tipoAlquiler, transaccion, fechaEntrada, fechaSalida, tarifaOriginal, descuento } = datos;
 
   return `
     <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #000; background: #fff; color: #000;">
@@ -131,7 +147,13 @@ export const generarReciboHTML = (datos: DatosRecibo): string => {
       <p style="color: #000;"><strong>Entrada:</strong> ${formatoFecha展示(fechaEntrada)}</p>
       <p style="color: #000;"><strong>Salida:</strong> ${formatoFecha展示(fechaSalida)}</p>
       <h4 style="margin: 10px 0 5px; color: #000;">IMPORTE</h4>
-      <p style="font-size: 18px; color: #000;"><strong>Total:</strong> ${formatearMoneda(transaccion.monto)}</p>
+      ${tarifaOriginal && descuento && descuento > 0 ? `
+        <p style="color: #000;"><strong>Tarifa original:</strong> ${formatearMoneda(tarifaOriginal)}</p>
+        <p style="color: #000;"><strong>Descuento:</strong> -${formatearMoneda(descuento)}</p>
+        <p style="font-size: 18px; color: #000;"><strong>Total:</strong> ${formatearMoneda(transaccion.monto)}</p>
+      ` : `
+        <p style="font-size: 18px; color: #000;"><strong>Total:</strong> ${formatearMoneda(transaccion.monto)}</p>
+      `}
       <p style="color: #000;"><strong>Método:</strong> ${transaccion.metodoPago.charAt(0).toUpperCase() + transaccion.metodoPago.slice(1)}</p>
       <p style="color: #000;"><strong>Concepto:</strong> ${transaccion.concepto}</p>
       <hr style="margin: 15px 0; border-color: #000;">
