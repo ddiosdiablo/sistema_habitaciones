@@ -32,7 +32,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
   const [tarifaOriginal, setTarifaOriginal] = useState(
     tipoAlquiler === 'dia' ? config.tarifaDiariaDefault : config.tariffMensualDefault
   );
-  const [descuento, setDescuento] = useState(0);
+  const [descuentoDiario, setDescuentoDiario] = useState(0);
   const [tarifa, setTarifa] = useState(
     tipoAlquiler === 'dia' ? config.tarifaDiariaDefault : config.tariffMensualDefault
   );
@@ -53,7 +53,8 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
       const tarifaDiaria = config.tarifaDiariaDefault;
       const nuevaTarifaOriginal = tarifaDiaria * diasEstadia;
       setTarifaOriginal(nuevaTarifaOriginal);
-      const nuevaTarifa = nuevaTarifaOriginal - descuento;
+      const descuentoTotal = descuentoDiario * diasEstadia;
+      const nuevaTarifa = nuevaTarifaOriginal - descuentoTotal;
       setTarifa(nuevaTarifa);
       if (estaPagado) {
         setMontoPagado(nuevaTarifa);
@@ -62,14 +63,14 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
     } else {
       const tarifaMensual = config.tariffMensualDefault;
       setTarifaOriginal(tarifaMensual);
-      const nuevaTarifa = tarifaMensual - descuento;
+      const nuevaTarifa = tarifaMensual - descuentoDiario;
       setTarifa(nuevaTarifa);
       if (estaPagado) {
         setMontoPagado(nuevaTarifa);
       }
       setFechaSalida(fechaMasMeses(1, fechaEntrada));
     }
-  }, [diasEstadia, tipoAlquiler, estaPagado]);
+  }, [diasEstadia, tipoAlquiler, estaPagado, descuentoDiario]);
 
   const clientesFiltrados = clientes.filter(
     (c) =>
@@ -110,6 +111,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
         return;
       }
 
+      const descuentoTotal = tipoAlquiler === 'dia' ? descuentoDiario * diasEstadia : descuentoDiario;
       const estadiaId = await addEstadia({
         habitacionId: habitacion.id,
         clienteId,
@@ -117,7 +119,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
         fechaEntrada,
         fechaSalidaEstimada: fechaSalida,
         tarifaOriginal,
-        descuento,
+        descuento: descuentoTotal,
         tarifaAplicada: tarifa,
         totalPagado: estaPagado ? montoPagado : 0,
         saldoPendiente: estaPagado ? 0 : tarifa - montoPagado,
@@ -152,7 +154,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
             fechaEntrada: fechaEntrada,
             fechaSalida: fechaSalida,
             tarifaOriginal,
-            descuento,
+            descuento: descuentoTotal,
           };
           
           setDatosRecibo(datosDelRecibo);
@@ -438,7 +440,8 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
               onChange={(e) => {
                 const nuevaOriginal = parseFloat(e.target.value) || 0;
                 setTarifaOriginal(nuevaOriginal);
-                setTarifa(nuevaOriginal - descuento);
+                const descuentoTotal = tipoAlquiler === 'dia' ? descuentoDiario * diasEstadia : descuentoDiario;
+                setTarifa(nuevaOriginal - descuentoTotal);
               }}
               className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-primary focus:border-transparent"
             />
@@ -446,30 +449,31 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-              Descuento
+              Descuento por día
             </label>
             <input
               type="number"
               min="0"
-              value={descuento}
-              onChange={(e) => {
-                const nuevoDescuento = parseFloat(e.target.value) || 0;
-                setDescuento(nuevoDescuento);
-                setTarifa(tarifaOriginal - nuevoDescuento);
-              }}
+              value={descuentoDiario}
+              onChange={(e) => setDescuentoDiario(parseFloat(e.target.value) || 0)}
               className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-primary focus:border-transparent"
             />
+            {tipoAlquiler === 'dia' && descuentoDiario > 0 && (
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                Descuento total: {formatearMoneda(descuentoDiario * diasEstadia)} ({formatearMoneda(descuentoDiario)} x {diasEstadia} días)
+              </p>
+            )}
           </div>
 
-          {descuento > 0 && (
+          {descuentoDiario > 0 && (
             <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-neutral-600 dark:text-neutral-400">Tarifa original:</span>
                 <span className="text-neutral-900 dark:text-neutral-100 line-through">{formatearMoneda(tarifaOriginal)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
-                <span className="text-green-600 dark:text-green-400">Descuento:</span>
-                <span className="text-green-600 dark:text-green-400">-{formatearMoneda(descuento)}</span>
+                <span className="text-green-600 dark:text-green-400">Descuento{tipoAlquiler === 'dia' ? ` (${formatearMoneda(descuentoDiario)} x ${diasEstadia} días)` : ''}:</span>
+                <span className="text-green-600 dark:text-green-400">-{formatearMoneda(tipoAlquiler === 'dia' ? descuentoDiario * diasEstadia : descuentoDiario)}</span>
               </div>
               <div className="flex justify-between items-center text-sm font-semibold border-t border-green-200 dark:border-green-800 pt-2 mt-2">
                 <span className="text-neutral-900 dark:text-neutral-100">Tarifa final:</span>
