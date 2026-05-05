@@ -107,7 +107,9 @@ export const useAppStore = create<AppState>()(
           if (transError) console.error('Error loading transacciones:', transError);
           
           const { data: configData, error: configError } = await supabase.from('config').select('*').limit(1).maybeSingle();
-          if (configError) console.error('Error loading config:', configError);
+          if (configError && !configError.message.includes('schema cache')) {
+            console.error('Error loading config:', configError);
+          }
 
           if (configData) {
             const excludedKeys = ['id', 'created_at', 'updated_at'];
