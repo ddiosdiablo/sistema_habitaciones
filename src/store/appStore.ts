@@ -105,12 +105,19 @@ export const useAppStore = create<AppState>()(
           if (configError) console.error('Error loading config:', configError);
 
           if (configData) {
+            const excludedKeys = ['id', 'created_at', 'updated_at'];
+            const mergedConfig: ConfigNegocio = {
+              ...configDefault,
+              ...Object.fromEntries(
+                Object.entries(configData).filter(([k, v]) => !excludedKeys.includes(k) && v !== null)
+              ),
+            };
             set({
               habitaciones: habitaciones || [],
               clientes: clientes || [],
               estadias: estadias || [],
               transacciones: transacciones || [],
-              config: { ...configData, leyendaPieRecibo: configData.leyendaPieRecibo || configDefault.leyendaPieRecibo },
+              config: mergedConfig,
               configId: configData.id,
               isLoading: false,
             });
