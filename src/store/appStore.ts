@@ -19,6 +19,7 @@ interface AppState {
   configId: string | null;
   darkMode: boolean;
   isLoading: boolean;
+  isAuthenticated: boolean;
 
   addHabitacion: (habitacion: Omit<Habitacion, 'id'>) => Promise<void>;
   updateHabitacion: (id: string, data: Partial<Habitacion>) => Promise<void>;
@@ -39,6 +40,8 @@ interface AppState {
   getTransaccionesByEstadia: (estadiaId: string) => Transaccion[];
 
   updateConfig: (data: Partial<ConfigNegocio>) => Promise<void>;
+  login: (username: string, password: string) => boolean;
+  logout: () => void;
   toggleDarkMode: () => void;
 
   getIngresosDiarios: (fecha: string) => number;
@@ -70,6 +73,7 @@ const configDefault: ConfigNegocio = {
   tarifaDiariaDefault: 50,
   tariffMensualDefault: 800,
   proximoNumeroRecibo: 1001,
+  usuarioAdmin: '',
   contrasenaAdmin: 'admin123',
   horaCheckout: '13:00',
 };
@@ -85,6 +89,7 @@ export const useAppStore = create<AppState>()(
       configId: null,
       darkMode: false,
       isLoading: true,
+      isAuthenticated: false,
 
       loadFromSupabase: async () => {
         set({ isLoading: true });
@@ -369,6 +374,21 @@ export const useAppStore = create<AppState>()(
         }
       },
 
+      login: (username, password) => {
+        const { config } = get();
+        const userMatch = username === (config.usuarioAdmin || '');
+        const passMatch = !config.contrasenaAdmin || password === config.contrasenaAdmin;
+        if (userMatch && passMatch) {
+          set({ isAuthenticated: true });
+          return true;
+        }
+        return false;
+      },
+
+      logout: () => {
+        set({ isAuthenticated: false });
+      },
+
       toggleDarkMode: () => {
         set((state) => ({ darkMode: !state.darkMode }));
       },
@@ -508,6 +528,7 @@ export const useAppStore = create<AppState>()(
       name: 'habita-gest-storage',
       partialize: (state) => ({
         darkMode: state.darkMode,
+        isAuthenticated: state.isAuthenticated,
       }),
     }
   )

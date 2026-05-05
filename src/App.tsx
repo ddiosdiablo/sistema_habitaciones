@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { Dashboard } from './pages/Dashboard';
@@ -8,13 +8,13 @@ import { Clientes } from './pages/Clientes';
 import { Ingresos } from './pages/Ingresos';
 import { Configuracion } from './pages/Configuracion';
 import { HistorialRecibos } from './pages/HistorialRecibos';
-import { PasswordGate } from './components/PasswordGate';
+import { Login } from './pages/Login';
 import { useAppStore } from './store/appStore';
 
 export const App = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { darkMode, isLoading, loadFromSupabase } = useAppStore();
+  const { darkMode, isLoading, isAuthenticated, loadFromSupabase } = useAppStore();
 
   useEffect(() => {
     loadFromSupabase();
@@ -36,6 +36,17 @@ export const App = () => {
           <p className="text-neutral-600 dark:text-neutral-400">Cargando datos...</p>
         </div>
       </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </BrowserRouter>
     );
   }
 
@@ -64,7 +75,8 @@ export const App = () => {
               <Route path="/clientes" element={<Clientes />} />
               <Route path="/ingresos" element={<Ingresos />} />
               <Route path="/recibos" element={<HistorialRecibos />} />
-              <Route path="/configuracion" element={<PasswordGate><Configuracion /></PasswordGate>} />
+              <Route path="/configuracion" element={<Configuracion />} />
+              <Route path="/login" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </main>

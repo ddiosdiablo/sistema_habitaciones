@@ -64,6 +64,7 @@ export interface ConfigNegocio {
   tarifaDiariaDefault: number;
   tariffMensualDefault: number;
   proximoNumeroRecibo: number;
+  usuarioAdmin?: string;
   contrasenaAdmin?: string;
   horaCheckout?: string;
 }

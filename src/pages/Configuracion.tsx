@@ -17,6 +17,7 @@ export const Configuracion = () => {
     impuestoRecibo: config.impuestoRecibo,
     tarifaDiariaDefault: config.tarifaDiariaDefault,
     tariffMensualDefault: config.tariffMensualDefault,
+    usuarioAdmin: config.usuarioAdmin || '',
     contrasenaAdmin: config.contrasenaAdmin || '',
     horaCheckout: config.horaCheckout || '13:00',
     proximoNumeroRecibo: config.proximoNumeroRecibo,
@@ -241,6 +242,22 @@ export const Configuracion = () => {
 
         <div>
           <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            Usuario de Administrador
+          </label>
+          <input
+            type="text"
+            value={formData.usuarioAdmin}
+            onChange={(e) => setFormData({ ...formData, usuarioAdmin: e.target.value })}
+            placeholder="Ingresa tu usuario"
+            className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
+          />
+          <p className="text-xs text-neutral-500 mt-1">
+            Usuario requerido para iniciar sesión
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
             Contraseña de Administrador
           </label>
           <input
@@ -251,7 +268,7 @@ export const Configuracion = () => {
             className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
           />
           <p className="text-xs text-neutral-500 mt-1">
-            Se requiere esta contraseña para acceder a Configuración
+            Se requiere esta contraseña para iniciar sesión
           </p>
         </div>
       </div>

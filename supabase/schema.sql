@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS config (
   email TEXT,
   leyendaPieRecibo TEXT DEFAULT 'Gracias por su preferencia',
   impuestoRecibo DECIMAL(5,2) DEFAULT 0,
+  usuarioAdmin TEXT DEFAULT '',
   tarifaDiariaDefault DECIMAL(10,2) DEFAULT 50,
   tariffMensualDefault DECIMAL(10,2) DEFAULT 800,
   proximoNumeroRecibo INTEGER DEFAULT 1001,
