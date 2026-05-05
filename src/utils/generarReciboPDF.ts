@@ -1,4 +1,4 @@
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import type { ConfigNegocio, Cliente, Habitacion, TipoAlquiler, Transaccion } from '../types';
 import { formatoFecha展示, formatoFechaTimeStamp } from './fechas';
 import { formatearMoneda } from './formatearMoneda';
