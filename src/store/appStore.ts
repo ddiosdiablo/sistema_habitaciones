@@ -49,6 +49,8 @@ interface AppState {
 
   clearTransacciones: () => Promise<void>;
 
+  syncToSupabase: () => Promise<{ habitaciones: number; clientes: number; estadias: number; transacciones: number }>;
+
   initDemo: () => void;
   loadFromSupabase: () => Promise<void>;
 }
@@ -85,11 +87,20 @@ export const useAppStore = create<AppState>()(
       loadFromSupabase: async () => {
         set({ isLoading: true });
         try {
-          const { data: habitaciones } = await supabase.from('habitaciones').select('*');
-          const { data: clientes } = await supabase.from('clientes').select('*');
-          const { data: estadias } = await supabase.from('estadias').select('*');
-          const { data: transacciones } = await supabase.from('transacciones').select('*');
-          const { data: configData } = await supabase.from('config').select('*').eq('id', 'default').single();
+          const { data: habitaciones, error: habError } = await supabase.from('habitaciones').select('*');
+          if (habError) console.error('Error loading habitaciones:', habError);
+          
+          const { data: clientes, error: cliError } = await supabase.from('clientes').select('*');
+          if (cliError) console.error('Error loading clientes:', cliError);
+          
+          const { data: estadias, error: estError } = await supabase.from('estadias').select('*');
+          if (estError) console.error('Error loading estadias:', estError);
+          
+          const { data: transacciones, error: transError } = await supabase.from('transacciones').select('*');
+          if (transError) console.error('Error loading transacciones:', transError);
+          
+          const { data: configData, error: configError } = await supabase.from('config').select('*').eq('id', 'default').single();
+          if (configError) console.error('Error loading config:', configError);
 
           set({
             habitaciones: habitaciones || [],
@@ -108,51 +119,101 @@ export const useAppStore = create<AppState>()(
       addHabitacion: async (habitacion) => {
         const id = generarId();
         const nueva = { ...habitacion, id };
+        
+        const { error } = await supabase.from('habitaciones').insert([nueva]);
+        if (error) {
+          console.error('Error adding habitacion:', error);
+          alert(`Error al guardar la habitación: ${error.message}`);
+          return;
+        }
+        
         set((state) => ({ habitaciones: [...state.habitaciones, nueva] }));
-        await supabase.from('habitaciones').insert([nueva]);
       },
 
       updateHabitacion: async (id, data) => {
+        const { error } = await supabase.from('habitaciones').update(data).eq('id', id);
+        if (error) {
+          console.error('Error updating habitacion:', error);
+          alert(`Error al actualizar la habitación: ${error.message}`);
+          return;
+        }
+        
         set((state) => ({
           habitaciones: state.habitaciones.map((h) =>
             h.id === id ? { ...h, ...data } : h
           ),
         }));
-        await supabase.from('habitaciones').update(data).eq('id', id);
       },
 
       deleteHabitacion: async (id) => {
+        const { error } = await supabase.from('habitaciones').delete().eq('id', id);
+        if (error) {
+          console.error('Error deleting habitacion:', error);
+          alert(`Error al eliminar la habitación: ${error.message}`);
+          return;
+        }
+        
         set((state) => ({
           habitaciones: state.habitaciones.filter((h) => h.id !== id),
         }));
-        await supabase.from('habitaciones').delete().eq('id', id);
       },
 
       addCliente: async (cliente) => {
         const id = generarId();
         const nuevo = { ...cliente, id, fechaRegistro: fechaHoy() };
+        
+        const { error } = await supabase.from('clientes').insert([nuevo]);
+        if (error) {
+          console.error('Error adding cliente:', error);
+          alert(`Error al guardar el cliente: ${error.message}`);
+          return;
+        }
+        
         set((state) => ({ clientes: [...state.clientes, nuevo] }));
-        await supabase.from('clientes').insert([nuevo]);
       },
 
       updateCliente: async (id, data) => {
+        const { error } = await supabase.from('clientes').update(data).eq('id', id);
+        if (error) {
+          console.error('Error updating cliente:', error);
+          alert(`Error al actualizar el cliente: ${error.message}`);
+          return;
+        }
+        
         set((state) => ({
           clientes: state.clientes.map((c) =>
             c.id === id ? { ...c, ...data } : c
           ),
         }));
-        await supabase.from('clientes').update(data).eq('id', id);
       },
 
       deleteCliente: async (id) => {
+        const { error } = await supabase.from('clientes').delete().eq('id', id);
+        if (error) {
+          console.error('Error deleting cliente:', error);
+          alert(`Error al eliminar el cliente: ${error.message}`);
+          return;
+        }
+        
         set((state) => ({
           clientes: state.clientes.filter((c) => c.id !== id),
         }));
-        await supabase.from('clientes').delete().eq('id', id);
       },
 
       addEstadia: async (estadia) => {
         const id = generarId();
+        
+        const { error } = await supabase.from('estadias').insert([{ ...estadia, id }]);
+        if (error) {
+          console.error('Error adding estadia:', error);
+          alert(`Error al guardar la estadía: ${error.message}`);
+          throw error;
+        }
+        
+        await supabase.from('habitaciones')
+          .update({ estado: 'ocupada' })
+          .eq('id', estadia.habitacionId);
+        
         set((state) => ({
           estadias: [...state.estadias, { ...estadia, id }],
           habitaciones: state.habitaciones.map((h) =>
@@ -161,25 +222,46 @@ export const useAppStore = create<AppState>()(
               : h
           ),
         }));
-        await supabase.from('estadias').insert([{ ...estadia, id }]);
-        await supabase.from('habitaciones')
-          .update({ estado: 'ocupada' })
-          .eq('id', estadia.habitacionId);
+        
         return id;
       },
 
       updateEstadia: async (id, data) => {
+        const { error } = await supabase.from('estadias').update(data).eq('id', id);
+        if (error) {
+          console.error('Error updating estadia:', error);
+          alert(`Error al actualizar la estadía: ${error.message}`);
+          return;
+        }
+        
         set((state) => ({
           estadias: state.estadias.map((e) =>
             e.id === id ? { ...e, ...data } : e
           ),
         }));
-        await supabase.from('estadias').update(data).eq('id', id);
       },
 
       endEstadia: async (id, fechaSalida, totalPagado, estaPagado) => {
         const estadia = get().estadias.find((e) => e.id === id);
         if (!estadia) return;
+
+        const { error: estadiaError } = await supabase.from('estadias').update({
+          estado: 'finalizada',
+          fechaSalidaReal: fechaSalida,
+          totalPagado,
+          saldoPendiente: estaPagado ? 0 : estadia.tarifaAplicada - totalPagado,
+          estaPagado,
+        }).eq('id', id);
+        
+        if (estadiaError) {
+          console.error('Error ending estadia:', estadiaError);
+          alert(`Error al finalizar la estadía: ${estadiaError.message}`);
+          return;
+        }
+
+        await supabase.from('habitaciones')
+          .update({ estado: 'disponible' })
+          .eq('id', estadia.habitacionId);
 
         set((state) => ({
           estadias: state.estadias.map((e) =>
@@ -200,18 +282,6 @@ export const useAppStore = create<AppState>()(
               : h
           ),
         }));
-
-        await supabase.from('estadias').update({
-          estado: 'finalizada',
-          fechaSalidaReal: fechaSalida,
-          totalPagado,
-          saldoPendiente: estaPagado ? 0 : estadia.tarifaAplicada - totalPagado,
-          estaPagado,
-        }).eq('id', id);
-
-        await supabase.from('habitaciones')
-          .update({ estado: 'disponible' })
-          .eq('id', estadia.habitacionId);
       },
 
       addTransaccion: async (transaccion) => {
@@ -219,15 +289,21 @@ export const useAppStore = create<AppState>()(
         const numeroRecibo = `R${get().config.proximoNumeroRecibo}`;
         const nueva = { ...transaccion, id, numeroRecibo };
         
+        const { error } = await supabase.from('transacciones').insert([nueva]);
+        if (error) {
+          console.error('Error adding transaccion:', error);
+          alert(`Error al guardar la transacción: ${error.message}`);
+          throw error;
+        }
+        
+        await supabase.from('config')
+          .update({ proximoNumeroRecibo: get().config.proximoNumeroRecibo + 1 })
+          .eq('id', 'default');
+
         set((state) => ({
           transacciones: [...state.transacciones, nueva],
           config: { ...state.config, proximoNumeroRecibo: state.config.proximoNumeroRecibo + 1 },
         }));
-
-        await supabase.from('transacciones').insert([nueva]);
-        await supabase.from('config')
-          .update({ proximoNumeroRecibo: get().config.proximoNumeroRecibo + 1 })
-          .eq('id', 'default');
 
         return numeroRecibo;
       },
@@ -247,8 +323,14 @@ export const useAppStore = create<AppState>()(
       },
 
       updateConfig: async (data) => {
+        const { error } = await supabase.from('config').update(data).eq('id', 'default');
+        if (error) {
+          console.error('Error updating config:', error);
+          alert(`Error al actualizar la configuración: ${error.message}`);
+          return;
+        }
+        
         set((state) => ({ config: { ...state.config, ...data } }));
-        await supabase.from('config').update(data).eq('id', 'default');
       },
 
       toggleDarkMode: () => {
@@ -319,6 +401,69 @@ export const useAppStore = create<AppState>()(
       clearTransacciones: async () => {
         set({ transacciones: [] });
         await supabase.from('transacciones').delete().neq('id', '');
+      },
+
+      syncToSupabase: async () => {
+        const state = get();
+        let synced = { habitaciones: 0, clientes: 0, estadias: 0, transacciones: 0 };
+
+        try {
+          const { data: supaHabitaciones } = await supabase.from('habitaciones').select('id');
+          const supaHabIds = new Set(supaHabitaciones?.map((h: { id: string }) => h.id) || []);
+          const habitacionesToSync = state.habitaciones.filter((h) => !supaHabIds.has(h.id));
+          for (const hab of habitacionesToSync) {
+            const { error } = await supabase.from('habitaciones').insert([hab]);
+            if (!error) synced.habitaciones++;
+            else console.error(`Error syncing habitacion ${hab.id}:`, error);
+          }
+
+          const { data: supaClientes } = await supabase.from('clientes').select('id');
+          const supaCliIds = new Set(supaClientes?.map((c: { id: string }) => c.id) || []);
+          const clientesToSync = state.clientes.filter((c) => !supaCliIds.has(c.id));
+          for (const cli of clientesToSync) {
+            const { error } = await supabase.from('clientes').insert([cli]);
+            if (!error) synced.clientes++;
+            else console.error(`Error syncing cliente ${cli.id}:`, error);
+          }
+
+          const { data: supaEstadias } = await supabase.from('estadias').select('id');
+          const supaEstIds = new Set(supaEstadias?.map((e: { id: string }) => e.id) || []);
+          const estadiasToSync = state.estadias.filter((e) => !supaEstIds.has(e.id));
+          for (const est of estadiasToSync) {
+            const { error } = await supabase.from('estadias').insert([est]);
+            if (!error) synced.estadias++;
+            else console.error(`Error syncing estadia ${est.id}:`, error);
+          }
+
+          const { data: supaTransacciones } = await supabase.from('transacciones').select('id');
+          const supaTransIds = new Set(supaTransacciones?.map((t: { id: string }) => t.id) || []);
+          const transaccionesToSync = state.transacciones.filter((t) => !supaTransIds.has(t.id));
+          for (const trans of transaccionesToSync) {
+            const { error } = await supabase.from('transacciones').insert([trans]);
+            if (!error) synced.transacciones++;
+            else console.error(`Error syncing transaccion ${trans.id}:`, error);
+          }
+
+          const { data: configSupa } = await supabase.from('config').select('*').eq('id', 'default').single();
+          if (configSupa) {
+            if (state.config.proximoNumeroRecibo > configSupa.proximoNumeroRecibo) {
+              await supabase.from('config').update({ proximoNumeroRecibo: state.config.proximoNumeroRecibo }).eq('id', 'default');
+            }
+          }
+
+          const total = synced.habitaciones + synced.clientes + synced.estadias + synced.transacciones;
+          if (total > 0) {
+            alert(`Sincronización completada:\n${synced.habitaciones} habitaciones\n${synced.clientes} clientes\n${synced.estadias} estadías\n${synced.transacciones} transacciones`);
+            await get().loadFromSupabase();
+          } else {
+            alert('Todos los datos ya están sincronizados con Supabase.');
+          }
+        } catch (error) {
+          console.error('Error during sync:', error);
+          alert(`Error durante la sincronización: ${error}`);
+        }
+
+        return synced;
       },
     }),
     {

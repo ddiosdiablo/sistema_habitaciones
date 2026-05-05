@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { Save, RotateCcw } from 'lucide-react';
+import { Save, RotateCcw, UploadCloud } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 
 export const Configuracion = () => {
-  const { config, updateConfig, clearTransacciones } = useAppStore();
+  const { config, updateConfig, clearTransacciones, syncToSupabase } = useAppStore();
   const [redirect, setRedirect] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const [formData, setFormData] = useState({
     nombre: config.nombre,
@@ -187,6 +188,30 @@ export const Configuracion = () => {
             Después de esta hora se cuenta un día adicional
           </p>
         </div>
+      </div>
+
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+          Sincronizar Datos
+        </h2>
+        <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+          Envía todos los datos almacenados localmente a Supabase. Útil si realizaste check-ins sin conexión o desde otra computadora.
+        </p>
+        <button
+          onClick={async () => {
+            setSyncing(true);
+            try {
+              await syncToSupabase();
+            } finally {
+              setSyncing(false);
+            }
+          }}
+          disabled={syncing}
+          className="flex items-center gap-2 px-4 py-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/50 rounded-lg transition-colors text-sm disabled:opacity-50"
+        >
+          <UploadCloud size={18} />
+          {syncing ? 'Sincronizando...' : 'Sincronizar a Supabase'}
+        </button>
       </div>
 
       <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 space-y-4 sm:space-y-6">
