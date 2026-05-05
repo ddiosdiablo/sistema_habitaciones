@@ -5,6 +5,7 @@ import {
   Users,
   DollarSign,
   Settings,
+  FileText,
   ChevronLeft,
   ChevronRight,
   X,
@@ -23,6 +24,7 @@ const navItems = [
   { to: '/habitaciones', icon: BedDouble, label: 'Habitaciones' },
   { to: '/clientes', icon: Users, label: 'Clientes' },
   { to: '/ingresos', icon: DollarSign, label: 'Ingresos' },
+  { to: '/recibos', icon: FileText, label: 'Recibos' },
   { to: '/configuracion', icon: Settings, label: 'Configuración' },
 ];
 

@@ -7,6 +7,7 @@ import { Habitaciones } from './pages/Habitaciones';
 import { Clientes } from './pages/Clientes';
 import { Ingresos } from './pages/Ingresos';
 import { Configuracion } from './pages/Configuracion';
+import { HistorialRecibos } from './pages/HistorialRecibos';
 import { PasswordGate } from './components/PasswordGate';
 import { useAppStore } from './store/appStore';
 
@@ -62,6 +63,7 @@ export const App = () => {
               <Route path="/habitaciones" element={<Habitaciones />} />
               <Route path="/clientes" element={<Clientes />} />
               <Route path="/ingresos" element={<Ingresos />} />
+              <Route path="/recibos" element={<HistorialRecibos />} />
               <Route path="/configuracion" element={<PasswordGate><Configuracion /></PasswordGate>} />
             </Routes>
           </div>
