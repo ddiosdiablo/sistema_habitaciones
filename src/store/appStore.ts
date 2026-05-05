@@ -16,6 +16,7 @@ interface AppState {
   estadias: Estadia[];
   transacciones: Transaccion[];
   config: ConfigNegocio;
+  configId: string | null;
   darkMode: boolean;
   isLoading: boolean;
 
@@ -81,6 +82,7 @@ export const useAppStore = create<AppState>()(
       estadias: [],
       transacciones: [],
       config: configDefault,
+      configId: null,
       darkMode: false,
       isLoading: true,
 
@@ -99,17 +101,30 @@ export const useAppStore = create<AppState>()(
           const { data: transacciones, error: transError } = await supabase.from('transacciones').select('*');
           if (transError) console.error('Error loading transacciones:', transError);
           
-          const { data: configData, error: configError } = await supabase.from('config').select('*').eq('id', 'default').single();
+          const { data: configData, error: configError } = await supabase.from('config').select('*').limit(1).maybeSingle();
           if (configError) console.error('Error loading config:', configError);
 
-          set({
-            habitaciones: habitaciones || [],
-            clientes: clientes || [],
-            estadias: estadias || [],
-            transacciones: transacciones || [],
-            config: configData || configDefault,
-            isLoading: false,
-          });
+          if (configData) {
+            set({
+              habitaciones: habitaciones || [],
+              clientes: clientes || [],
+              estadias: estadias || [],
+              transacciones: transacciones || [],
+              config: { ...configData, leyendaPieRecibo: configData.leyendaPieRecibo || configDefault.leyendaPieRecibo },
+              configId: configData.id,
+              isLoading: false,
+            });
+          } else {
+            set({
+              habitaciones: habitaciones || [],
+              clientes: clientes || [],
+              estadias: estadias || [],
+              transacciones: transacciones || [],
+              config: configDefault,
+              configId: null,
+              isLoading: false,
+            });
+          }
         } catch (error) {
           console.error('Error loading from Supabase:', error);
           set({ isLoading: false });
@@ -296,9 +311,12 @@ export const useAppStore = create<AppState>()(
           throw error;
         }
         
-        await supabase.from('config')
-          .update({ proximoNumeroRecibo: get().config.proximoNumeroRecibo + 1 })
-          .eq('id', 'default');
+        const configId = get().configId;
+        if (configId) {
+          await supabase.from('config')
+            .update({ proximoNumeroRecibo: get().config.proximoNumeroRecibo + 1 })
+            .eq('id', configId);
+        }
 
         set((state) => ({
           transacciones: [...state.transacciones, nueva],
@@ -323,14 +341,25 @@ export const useAppStore = create<AppState>()(
       },
 
       updateConfig: async (data) => {
-        const { error } = await supabase.from('config').update(data).eq('id', 'default');
-        if (error) {
-          console.error('Error updating config:', error);
-          alert(`Error al actualizar la configuración: ${error.message}`);
-          return;
-        }
+        const currentConfigId = get().configId;
         
-        set((state) => ({ config: { ...state.config, ...data } }));
+        if (!currentConfigId) {
+          const { data: inserted, error: insertError } = await supabase.from('config').insert([{ ...configDefault, ...data }]).select().single();
+          if (insertError) {
+            console.error('Error creating config:', insertError);
+            alert(`Error al crear la configuración: ${insertError.message}`);
+            return;
+          }
+          set((state) => ({ config: { ...state.config, ...data }, configId: inserted.id }));
+        } else {
+          const { error } = await supabase.from('config').update(data).eq('id', currentConfigId);
+          if (error) {
+            console.error('Error updating config:', error);
+            alert(`Error al actualizar la configuración: ${error.message}`);
+            return;
+          }
+          set((state) => ({ config: { ...state.config, ...data } }));
+        }
       },
 
       toggleDarkMode: () => {
@@ -393,6 +422,7 @@ export const useAppStore = create<AppState>()(
           estadias: [],
           transacciones: [],
           config: { ...configDefault, proximoNumeroRecibo: 1001 },
+          configId: null,
           darkMode: false,
           isLoading: false,
         });
@@ -444,10 +474,11 @@ export const useAppStore = create<AppState>()(
             else console.error(`Error syncing transaccion ${trans.id}:`, error);
           }
 
-          const { data: configSupa } = await supabase.from('config').select('*').eq('id', 'default').single();
-          if (configSupa) {
-            if (state.config.proximoNumeroRecibo > configSupa.proximoNumeroRecibo) {
-              await supabase.from('config').update({ proximoNumeroRecibo: state.config.proximoNumeroRecibo }).eq('id', 'default');
+          const currentConfigId = get().configId;
+          if (currentConfigId) {
+            const { data: configSupa } = await supabase.from('config').select('*').eq('id', currentConfigId).single();
+            if (configSupa && state.config.proximoNumeroRecibo > configSupa.proximoNumeroRecibo) {
+              await supabase.from('config').update({ proximoNumeroRecibo: state.config.proximoNumeroRecibo }).eq('id', currentConfigId);
             }
           }
 
