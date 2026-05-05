@@ -376,7 +376,7 @@ export const useAppStore = create<AppState>()(
 
       login: (username, password) => {
         const { config } = get();
-        const userMatch = username === (config.usuarioAdmin || '');
+        const userMatch = !config.usuarioAdmin || username === config.usuarioAdmin;
         const passMatch = !config.contrasenaAdmin || password === config.contrasenaAdmin;
         if (userMatch && passMatch) {
           set({ isAuthenticated: true });
