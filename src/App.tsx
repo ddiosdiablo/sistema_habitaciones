@@ -14,7 +14,7 @@ import { useAppStore } from './store/appStore';
 export const App = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { darkMode, isLoading, isAuthenticated, loadFromSupabase } = useAppStore();
+  const { darkMode, isLoading, isAuthenticated, loadFromSupabase, config, login } = useAppStore();
 
   useEffect(() => {
     loadFromSupabase();
@@ -28,6 +28,12 @@ export const App = () => {
     }
   }, [darkMode]);
 
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated && !config?.usuarioAdmin) {
+      login('', '');
+    }
+  }, [isLoading, isAuthenticated, config?.usuarioAdmin, login]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center">
@@ -39,7 +45,7 @@ export const App = () => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && config?.usuarioAdmin) {
     return (
       <BrowserRouter>
         <Routes>
