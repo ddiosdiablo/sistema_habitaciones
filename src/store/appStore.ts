@@ -354,23 +354,32 @@ export const useAppStore = create<AppState>()(
 
       updateConfig: async (data) => {
         const currentConfigId = get().configId;
-        
+        const safeData = { ...data };
+
         if (!currentConfigId) {
-          const { data: inserted, error: insertError } = await supabase.from('config').insert([{ ...configDefault, ...data }]).select().single();
+          const { data: inserted, error: insertError } = await supabase.from('config').insert([{ ...configDefault, ...safeData }]).select().single();
           if (insertError) {
+            if (insertError.message.includes('schema cache')) {
+              alert('Columna no encontrada en Supabase. Ejecuta el SQL para agregar la columna usuarioAdmin en la base de datos.');
+              return;
+            }
             console.error('Error creating config:', insertError);
             alert(`Error al crear la configuración: ${insertError.message}`);
             return;
           }
-          set((state) => ({ config: { ...state.config, ...data }, configId: inserted.id }));
+          set((state) => ({ config: { ...state.config, ...safeData }, configId: inserted.id }));
         } else {
-          const { error } = await supabase.from('config').update(data).eq('id', currentConfigId);
+          const { error } = await supabase.from('config').update(safeData).eq('id', currentConfigId);
           if (error) {
+            if (error.message.includes('schema cache')) {
+              alert('Columna no encontrada en Supabase. Ejecuta el SQL para agregar la columna usuarioAdmin en la base de datos.');
+              return;
+            }
             console.error('Error updating config:', error);
             alert(`Error al actualizar la configuración: ${error.message}`);
             return;
           }
-          set((state) => ({ config: { ...state.config, ...data } }));
+          set((state) => ({ config: { ...state.config, ...safeData } }));
         }
       },
 
