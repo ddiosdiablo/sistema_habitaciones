@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { supabase } from '../lib/supabase';
+import { db } from '../lib/supabase';
 import type {
   Habitacion,
   Cliente,
@@ -94,46 +94,51 @@ export const useAppStore = create<AppState>()(
       loadFromSupabase: async () => {
         set({ isLoading: true });
         try {
-          const { data: habitaciones, error: habError } = await supabase.from('habitaciones').select('*');
-          if (habError) console.error('Error loading habitaciones:', habError);
+          const habResult = await db.from('habitaciones').select('*');
+          const habitaciones = (habResult.data as Habitacion[]) || [];
+          if (habResult.error) console.error('Error loading habitaciones:', habResult.error);
           
-          const { data: clientes, error: cliError } = await supabase.from('clientes').select('*');
-          if (cliError) console.error('Error loading clientes:', cliError);
+          const cliResult = await db.from('clientes').select('*');
+          const clientes = (cliResult.data as Cliente[]) || [];
+          if (cliResult.error) console.error('Error loading clientes:', cliResult.error);
           
-          const { data: estadias, error: estError } = await supabase.from('estadias').select('*');
-          if (estError) console.error('Error loading estadias:', estError);
+          const estResult = await db.from('estadias').select('*');
+          const estadias = (estResult.data as Estadia[]) || [];
+          if (estResult.error) console.error('Error loading estadias:', estResult.error);
           
-          const { data: transacciones, error: transError } = await supabase.from('transacciones').select('*');
-          if (transError) console.error('Error loading transacciones:', transError);
+          const transResult = await db.from('transacciones').select('*');
+          const transacciones = (transResult.data as Transaccion[]) || [];
+          if (transResult.error) console.error('Error loading transacciones:', transResult.error);
           
-          const { data: configData, error: configError } = await supabase.from('config').select('*').limit(1).maybeSingle();
-          if (configError && !configError.message.includes('schema cache')) {
-            console.error('Error loading config:', configError);
+          const configResult = await db.from('config').select('*');
+          const configData = (configResult.data as ConfigNegocio[] & { id?: string }[])[0] || null;
+          if (configResult.error && !configResult.error.message.includes('schema cache')) {
+            console.error('Error loading config:', configResult.error);
           }
 
           if (configData) {
-            const excludedKeys = ['id', 'created_at', 'updated_at'];
+            const { id, ...configFields } = configData;
             const mergedConfig: ConfigNegocio = {
               ...configDefault,
               ...Object.fromEntries(
-                Object.entries(configData).filter(([k, v]) => !excludedKeys.includes(k) && v !== null)
-              ),
+                Object.entries(configFields).filter(([_, v]) => v !== null && v !== undefined)
+              ) as unknown as ConfigNegocio,
             };
             set({
-              habitaciones: habitaciones || [],
-              clientes: clientes || [],
-              estadias: estadias || [],
-              transacciones: transacciones || [],
+              habitaciones,
+              clientes,
+              estadias,
+              transacciones,
               config: mergedConfig,
-              configId: configData.id,
+              configId: id || null,
               isLoading: false,
             });
           } else {
             set({
-              habitaciones: habitaciones || [],
-              clientes: clientes || [],
-              estadias: estadias || [],
-              transacciones: transacciones || [],
+              habitaciones,
+              clientes,
+              estadias,
+              transacciones,
               config: configDefault,
               configId: null,
               isLoading: false,
@@ -149,7 +154,7 @@ export const useAppStore = create<AppState>()(
         const id = generarId();
         const nueva = { ...habitacion, id };
         
-        const { error } = await supabase.from('habitaciones').insert([nueva]);
+        const { error } = await db.from('habitaciones').insert([nueva]);
         if (error) {
           console.error('Error adding habitacion:', error);
           alert(`Error al guardar la habitación: ${error.message}`);
@@ -160,7 +165,7 @@ export const useAppStore = create<AppState>()(
       },
 
       updateHabitacion: async (id, data) => {
-        const { error } = await supabase.from('habitaciones').update(data).eq('id', id);
+        const { error } = await db.from('habitaciones').update(data).eq('id', id);
         if (error) {
           console.error('Error updating habitacion:', error);
           alert(`Error al actualizar la habitación: ${error.message}`);
@@ -175,7 +180,7 @@ export const useAppStore = create<AppState>()(
       },
 
       deleteHabitacion: async (id) => {
-        const { error } = await supabase.from('habitaciones').delete().eq('id', id);
+        const { error } = await db.from('habitaciones').delete().eq('id', id);
         if (error) {
           console.error('Error deleting habitacion:', error);
           alert(`Error al eliminar la habitación: ${error.message}`);
@@ -191,7 +196,7 @@ export const useAppStore = create<AppState>()(
         const id = generarId();
         const nuevo = { ...cliente, id, fechaRegistro: fechaHoy() };
         
-        const { error } = await supabase.from('clientes').insert([nuevo]);
+        const { error } = await db.from('clientes').insert([nuevo]);
         if (error) {
           console.error('Error adding cliente:', error);
           alert(`Error al guardar el cliente: ${error.message}`);
@@ -202,7 +207,7 @@ export const useAppStore = create<AppState>()(
       },
 
       updateCliente: async (id, data) => {
-        const { error } = await supabase.from('clientes').update(data).eq('id', id);
+        const { error } = await db.from('clientes').update(data).eq('id', id);
         if (error) {
           console.error('Error updating cliente:', error);
           alert(`Error al actualizar el cliente: ${error.message}`);
@@ -217,7 +222,7 @@ export const useAppStore = create<AppState>()(
       },
 
       deleteCliente: async (id) => {
-        const { error } = await supabase.from('clientes').delete().eq('id', id);
+        const { error } = await db.from('clientes').delete().eq('id', id);
         if (error) {
           console.error('Error deleting cliente:', error);
           alert(`Error al eliminar el cliente: ${error.message}`);
@@ -232,14 +237,14 @@ export const useAppStore = create<AppState>()(
       addEstadia: async (estadia) => {
         const id = generarId();
         
-        const { error } = await supabase.from('estadias').insert([{ ...estadia, id }]);
+        const { error } = await db.from('estadias').insert([{ ...estadia, id }]);
         if (error) {
           console.error('Error adding estadia:', error);
           alert(`Error al guardar la estadía: ${error.message}`);
           throw error;
         }
         
-        await supabase.from('habitaciones')
+        await db.from('habitaciones')
           .update({ estado: 'ocupada' })
           .eq('id', estadia.habitacionId);
         
@@ -256,7 +261,7 @@ export const useAppStore = create<AppState>()(
       },
 
       updateEstadia: async (id, data) => {
-        const { error } = await supabase.from('estadias').update(data).eq('id', id);
+        const { error } = await db.from('estadias').update(data).eq('id', id);
         if (error) {
           console.error('Error updating estadia:', error);
           alert(`Error al actualizar la estadía: ${error.message}`);
@@ -274,7 +279,7 @@ export const useAppStore = create<AppState>()(
         const estadia = get().estadias.find((e) => e.id === id);
         if (!estadia) return;
 
-        const { error: estadiaError } = await supabase.from('estadias').update({
+        const { error: estadiaError } = await db.from('estadias').update({
           estado: 'finalizada',
           fechaSalidaReal: fechaSalida,
           totalPagado,
@@ -288,7 +293,7 @@ export const useAppStore = create<AppState>()(
           return;
         }
 
-        await supabase.from('habitaciones')
+        await db.from('habitaciones')
           .update({ estado: 'disponible' })
           .eq('id', estadia.habitacionId);
 
@@ -318,7 +323,7 @@ export const useAppStore = create<AppState>()(
         const numeroRecibo = `R${get().config.proximoNumeroRecibo}`;
         const nueva = { ...transaccion, id, numeroRecibo };
         
-        const { error } = await supabase.from('transacciones').insert([nueva]);
+        const { error } = await db.from('transacciones').insert([nueva]);
         if (error) {
           console.error('Error adding transaccion:', error);
           alert(`Error al guardar la transacción: ${error.message}`);
@@ -327,7 +332,7 @@ export const useAppStore = create<AppState>()(
         
         const configId = get().configId;
         if (configId) {
-          await supabase.from('config')
+          await db.from('config')
             .update({ proximoNumeroRecibo: get().config.proximoNumeroRecibo + 1 })
             .eq('id', configId);
         }
@@ -359,24 +364,17 @@ export const useAppStore = create<AppState>()(
         const safeData = { ...data };
 
         if (!currentConfigId) {
-          const { data: inserted, error: insertError } = await supabase.from('config').insert([{ ...configDefault, ...safeData }]).select().single();
+          const { data: inserted, error: insertError } = await db.from('config').insert([{ ...configDefault, ...safeData }]);
           if (insertError) {
-            if (insertError.message.includes('schema cache')) {
-              alert('Columna no encontrada en Supabase. Ejecuta el SQL para agregar la columna usuarioAdmin en la base de datos.');
-              return;
-            }
             console.error('Error creating config:', insertError);
             alert(`Error al crear la configuración: ${insertError.message}`);
             return;
           }
-          set((state) => ({ config: { ...state.config, ...safeData }, configId: inserted.id }));
+          const insertedId = (inserted as any)?.id || (inserted as any)?.[0]?.id;
+          set((state) => ({ config: { ...state.config, ...safeData }, configId: insertedId || null }));
         } else {
-          const { error } = await supabase.from('config').update(safeData).eq('id', currentConfigId);
+          const { error } = await db.from('config').update(safeData).eq('id', currentConfigId);
           if (error) {
-            if (error.message.includes('schema cache')) {
-              alert('Columna no encontrada en Supabase. Ejecuta el SQL para agregar la columna usuarioAdmin en la base de datos.');
-              return;
-            }
             console.error('Error updating config:', error);
             alert(`Error al actualizar la configuración: ${error.message}`);
             return;
@@ -468,7 +466,7 @@ export const useAppStore = create<AppState>()(
 
       clearTransacciones: async () => {
         set({ transacciones: [] });
-        await supabase.from('transacciones').delete().neq('id', '');
+        await db.from('transacciones').delete().neq('id', '');
       },
 
       syncToSupabase: async () => {
@@ -476,47 +474,53 @@ export const useAppStore = create<AppState>()(
         let synced = { habitaciones: 0, clientes: 0, estadias: 0, transacciones: 0 };
 
         try {
-          const { data: supaHabitaciones } = await supabase.from('habitaciones').select('id');
-          const supaHabIds = new Set(supaHabitaciones?.map((h: { id: string }) => h.id) || []);
+          const habResult = await db.from('habitaciones').select('*');
+          const supaHabitaciones = habResult.data as { id: string }[] || [];
+          const supaHabIds = new Set(supaHabitaciones.map((h: { id: string }) => h.id));
           const habitacionesToSync = state.habitaciones.filter((h) => !supaHabIds.has(h.id));
           for (const hab of habitacionesToSync) {
-            const { error } = await supabase.from('habitaciones').insert([hab]);
+            const { error } = await db.from('habitaciones').insert([hab as unknown as Record<string, unknown>]);
             if (!error) synced.habitaciones++;
             else console.error(`Error syncing habitacion ${hab.id}:`, error);
           }
 
-          const { data: supaClientes } = await supabase.from('clientes').select('id');
-          const supaCliIds = new Set(supaClientes?.map((c: { id: string }) => c.id) || []);
+          const cliResult = await db.from('clientes').select('*');
+          const supaClientes = cliResult.data as { id: string }[] || [];
+          const supaCliIds = new Set(supaClientes.map((c: { id: string }) => c.id));
           const clientesToSync = state.clientes.filter((c) => !supaCliIds.has(c.id));
           for (const cli of clientesToSync) {
-            const { error } = await supabase.from('clientes').insert([cli]);
+            const { error } = await db.from('clientes').insert([cli as unknown as Record<string, unknown>]);
             if (!error) synced.clientes++;
             else console.error(`Error syncing cliente ${cli.id}:`, error);
           }
 
-          const { data: supaEstadias } = await supabase.from('estadias').select('id');
-          const supaEstIds = new Set(supaEstadias?.map((e: { id: string }) => e.id) || []);
+          const estResult = await db.from('estadias').select('*');
+          const supaEstadias = estResult.data as { id: string }[] || [];
+          const supaEstIds = new Set(supaEstadias.map((e: { id: string }) => e.id));
           const estadiasToSync = state.estadias.filter((e) => !supaEstIds.has(e.id));
           for (const est of estadiasToSync) {
-            const { error } = await supabase.from('estadias').insert([est]);
+            const { error } = await db.from('estadias').insert([est as unknown as Record<string, unknown>]);
             if (!error) synced.estadias++;
             else console.error(`Error syncing estadia ${est.id}:`, error);
           }
 
-          const { data: supaTransacciones } = await supabase.from('transacciones').select('id');
-          const supaTransIds = new Set(supaTransacciones?.map((t: { id: string }) => t.id) || []);
+          const transResult = await db.from('transacciones').select('*');
+          const supaTransacciones = transResult.data as { id: string }[] || [];
+          const supaTransIds = new Set(supaTransacciones.map((t: { id: string }) => t.id));
           const transaccionesToSync = state.transacciones.filter((t) => !supaTransIds.has(t.id));
           for (const trans of transaccionesToSync) {
-            const { error } = await supabase.from('transacciones').insert([trans]);
+            const { error } = await db.from('transacciones').insert([trans as unknown as Record<string, unknown>]);
             if (!error) synced.transacciones++;
             else console.error(`Error syncing transaccion ${trans.id}:`, error);
           }
 
           const currentConfigId = get().configId;
           if (currentConfigId) {
-            const { data: configSupa } = await supabase.from('config').select('*').eq('id', currentConfigId).single();
+            const configResult = await db.from('config').select('*');
+            const allConfig = (configResult.data as any[]) || [];
+            const configSupa = allConfig.find((c: any) => c.id === currentConfigId);
             if (configSupa && state.config.proximoNumeroRecibo > configSupa.proximoNumeroRecibo) {
-              await supabase.from('config').update({ proximoNumeroRecibo: state.config.proximoNumeroRecibo }).eq('id', currentConfigId);
+              await db.from('config').update({ proximoNumeroRecibo: state.config.proximoNumeroRecibo }).eq('id', currentConfigId);
             }
           }
 
