@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  TrendingDown,
 } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 
@@ -24,6 +25,7 @@ const navItems = [
   { to: '/habitaciones', icon: BedDouble, label: 'Habitaciones' },
   { to: '/clientes', icon: Users, label: 'Clientes' },
   { to: '/ingresos', icon: DollarSign, label: 'Ingresos' },
+  { to: '/gastos', icon: TrendingDown, label: 'Gastos' },
   { to: '/recibos', icon: FileText, label: 'Recibos' },
   { to: '/configuracion', icon: Settings, label: 'Configuración' },
 ];

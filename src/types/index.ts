@@ -2,6 +2,7 @@ export type TipoAlquiler = 'dia' | 'mes';
 export type EstadoHabitacion = 'disponible' | 'ocupada' | 'mantenimiento';
 export type MetodoPago = 'efectivo' | 'transferencia' | 'tarjeta' | 'otro';
 export type TipoTransaccion = 'checkin' | 'checkout' | 'pago' | 'pago_parcial';
+export type CategoriaGasto = 'mantenimiento' | 'suministros' | 'servicios' | 'personal' | 'otro';
 
 export interface Habitacion {
   id: string;
@@ -53,6 +54,15 @@ export interface Transaccion {
   numeroRecibo?: string;
 }
 
+export interface Gasto {
+  id: string;
+  fecha: string;
+  categoria: CategoriaGasto;
+  descripcion: string;
+  monto: number;
+  metodoPago: MetodoPago;
+}
+
 export interface ConfigNegocio {
   nombre: string;
   direccion: string;
@@ -74,5 +84,6 @@ export interface DatosDemo {
   clientes: Cliente[];
   estadias: Estadia[];
   transacciones: Transaccion[];
+  gastos: Gasto[];
   config: ConfigNegocio;
 }

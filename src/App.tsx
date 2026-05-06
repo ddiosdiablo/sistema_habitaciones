@@ -8,6 +8,7 @@ import { Clientes } from './pages/Clientes';
 import { Ingresos } from './pages/Ingresos';
 import { Configuracion } from './pages/Configuracion';
 import { HistorialRecibos } from './pages/HistorialRecibos';
+import { Gastos } from './pages/Gastos';
 import { Login } from './pages/Login';
 import { useAppStore } from './store/appStore';
 
@@ -81,6 +82,7 @@ export const App = () => {
               <Route path="/clientes" element={<Clientes />} />
               <Route path="/ingresos" element={<Ingresos />} />
               <Route path="/recibos" element={<HistorialRecibos />} />
+              <Route path="/gastos" element={<Gastos />} />
               <Route path="/configuracion" element={<Configuracion />} />
               <Route path="/login" element={<Navigate to="/" replace />} />
             </Routes>

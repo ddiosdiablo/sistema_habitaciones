@@ -6,6 +6,8 @@ import type {
   Cliente,
   Estadia,
   Transaccion,
+  Gasto,
+  CategoriaGasto,
   ConfigNegocio,
   EstadoHabitacion,
 } from '../types';
@@ -15,6 +17,7 @@ interface AppState {
   clientes: Cliente[];
   estadias: Estadia[];
   transacciones: Transaccion[];
+  gastos: Gasto[];
   config: ConfigNegocio;
   configId: string | null;
   darkMode: boolean;
@@ -83,6 +86,7 @@ export const useAppStore = create<AppState>()(
       clientes: [],
       estadias: [],
       transacciones: [],
+      gastos: [],
       config: configDefault,
       configId: null,
       darkMode: false,
@@ -107,6 +111,10 @@ export const useAppStore = create<AppState>()(
           const transResult = await db.from('transacciones').select('*');
           const transacciones = (transResult.data as Transaccion[]) || [];
           if (transResult.error) console.error('Error loading transacciones:', transResult.error);
+
+          const gastosResult = await db.from('gastos').select('*');
+          const gastos = (gastosResult.data as Gasto[]) || [];
+          if (gastosResult.error) console.error('Error loading gastos:', gastosResult.error);
           
           const configResult = await db.from('config').select('*');
           const configData = (configResult.data as ConfigNegocio[] & { id?: string }[])[0] || null;
@@ -127,6 +135,7 @@ export const useAppStore = create<AppState>()(
               clientes,
               estadias,
               transacciones,
+              gastos,
               config: mergedConfig,
               configId: id || null,
               isLoading: false,
@@ -137,6 +146,7 @@ export const useAppStore = create<AppState>()(
               clientes,
               estadias,
               transacciones,
+              gastos,
               config: configDefault,
               configId: null,
               isLoading: false,
@@ -337,6 +347,54 @@ export const useAppStore = create<AppState>()(
         return numeroRecibo;
       },
 
+      addGasto: async (gasto: Omit<Gasto, 'id'>) => {
+        const { data: inserted, error } = await db.from('gastos').insert([gasto]);
+        if (error) {
+          console.error('Error adding gasto:', error);
+          alert(`Error al guardar el gasto: ${error.message}`);
+          return;
+        }
+        const nuevo = { ...gasto, id: (inserted as any)[0].id };
+        set((state) => ({ gastos: [...state.gastos, nuevo] }));
+      },
+
+      deleteGasto: async (id: string) => {
+        const { error } = await db.from('gastos').delete().eq('id', id);
+        if (error) {
+          console.error('Error deleting gasto:', error);
+          alert(`Error al eliminar el gasto: ${error.message}`);
+          return;
+        }
+        set((state) => ({
+          gastos: state.gastos.filter((g) => g.id !== id),
+        }));
+      },
+
+      getGastosDiarios: (fecha: string) => {
+        return get()
+          .gastos.filter((g) => g.fecha.startsWith(fecha))
+          .reduce((sum, g) => sum + g.monto, 0);
+      },
+
+      getGastosSemanales: (fechaInicio: string, fechaFin: string) => {
+        return get()
+          .gastos.filter((g) => {
+            const fecha = g.fecha.substring(0, 10);
+            return fecha >= fechaInicio && fecha <= fechaFin;
+          })
+          .reduce((sum, g) => sum + g.monto, 0);
+      },
+
+      getGastosMensuales: (anio: number, mes: number) => {
+        const mesStr = String(mes).padStart(2, '0');
+        return get()
+          .gastos.filter((g) => {
+            const fecha = g.fecha.substring(0, 7);
+            return fecha === `${anio}-${mesStr}`;
+          })
+          .reduce((sum, g) => sum + g.monto, 0);
+      },
+
       getEstadiaActivaByHabitacion: (habitacionId) => {
         return get().estadias.find(
           (e) => e.habitacionId === habitacionId && e.estado === 'activa'
@@ -449,6 +507,7 @@ export const useAppStore = create<AppState>()(
           clientes: [],
           estadias: [],
           transacciones: [],
+          gastos: [],
           config: { ...configDefault, proximoNumeroRecibo: 1001 },
           configId: null,
           darkMode: false,
@@ -463,7 +522,7 @@ export const useAppStore = create<AppState>()(
 
       syncToSupabase: async () => {
         const state = get();
-        let synced = { habitaciones: 0, clientes: 0, estadias: 0, transacciones: 0 };
+        let synced = { habitaciones: 0, clientes: 0, estadias: 0, transacciones: 0, gastos: 0 };
 
         try {
           const habResult = await db.from('habitaciones').select('*');
@@ -506,6 +565,16 @@ export const useAppStore = create<AppState>()(
             else console.error(`Error syncing transaccion ${trans.id}:`, error);
           }
 
+          const gastosResult = await db.from('gastos').select('*');
+          const supaGastos = gastosResult.data as { id: string }[] || [];
+          const supaGastoIds = new Set(supaGastos.map((g: { id: string }) => g.id));
+          const gastosToSync = state.gastos.filter((g) => !supaGastoIds.has(g.id));
+          for (const gasto of gastosToSync) {
+            const { error } = await db.from('gastos').insert([gasto as unknown as Record<string, unknown>]);
+            if (!error) synced.gastos++;
+            else console.error(`Error syncing gasto ${gasto.id}:`, error);
+          }
+
           const currentConfigId = get().configId;
           if (currentConfigId) {
             const configResult = await db.from('config').select('*');
@@ -516,9 +585,9 @@ export const useAppStore = create<AppState>()(
             }
           }
 
-          const total = synced.habitaciones + synced.clientes + synced.estadias + synced.transacciones;
+          const total = synced.habitaciones + synced.clientes + synced.estadias + synced.transacciones + synced.gastos;
           if (total > 0) {
-            alert(`Sincronización completada:\n${synced.habitaciones} habitaciones\n${synced.clientes} clientes\n${synced.estadias} estadías\n${synced.transacciones} transacciones`);
+            alert(`Sincronización completada:\n${synced.habitaciones} habitaciones\n${synced.clientes} clientes\n${synced.estadias} estadías\n${synced.transacciones} transacciones\n${synced.gastos} gastos`);
             await get().loadFromSupabase();
           } else {
             alert('Todos los datos ya están sincronizados con Supabase.');
