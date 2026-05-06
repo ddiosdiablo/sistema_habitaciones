@@ -1,6 +1,7 @@
-import { X, Eye, Printer, Download, MessageCircle } from 'lucide-react';
-import { generarReciboPDF, generarReciboHTML } from '../utils/generarReciboPDF';
+import { X, Eye, Printer, Download, MessageCircle, Check, AlertCircle } from 'lucide-react';
+import { generarReciboPDF, generarReciboBlob, generarReciboHTML } from '../utils/generarReciboPDF';
 import type { DatosRecibo } from '../utils/generarReciboPDF';
+import { useState } from 'react';
 
 interface VistaPreviaReciboProps {
   datos: DatosRecibo;
@@ -9,6 +10,9 @@ interface VistaPreviaReciboProps {
 
 export const VistaPreviaRecibo = ({ datos, onClose }: VistaPreviaReciboProps) => {
   const html = generarReciboHTML(datos);
+  const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
+  const [shareError, setShareError] = useState(false);
 
   const handleImprimir = () => {
     const printWindow = window.open('', '_blank');
@@ -40,30 +44,40 @@ export const VistaPreviaRecibo = ({ datos, onClose }: VistaPreviaReciboProps) =>
     generarReciboPDF(datos);
   };
 
-  const handleEnviarWhatsApp = () => {
+  const handleEnviarWhatsApp = async () => {
+    setSendingWhatsapp(true);
+    setShareSuccess(false);
+    setShareError(false);
+
+    const blob = generarReciboBlob(datos);
+    const file = new File([blob], `recibo_${datos.transaccion.numeroRecibo}.pdf`, { type: 'application/pdf' });
+
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({
+          title: `Recibo ${datos.transaccion.numeroRecibo}`,
+          text: `Recibo de pago - ${datos.config.nombre}`,
+          files: [file],
+        });
+        setShareSuccess(true);
+      } catch (err: any) {
+        if (err.name !== 'AbortError') {
+          fallbackWhatsApp(datos);
+        }
+      }
+    } else {
+      fallbackWhatsApp(datos);
+    }
+
+    setSendingWhatsapp(false);
+  };
+
+  const fallbackWhatsApp = (datos: DatosRecibo) => {
+    generarReciboPDF(datos);
     const telefono = datos.cliente.telefono.replace(/[^0-9+]/g, '');
-    const negocio = datos.config.nombre;
-    const reciboNum = datos.transaccion.numeroRecibo;
-    const habitacion = datos.habitacion.numero;
-    const cliente = datos.cliente.nombreCompleto;
-    const monto = datos.transaccion.monto;
-    const fecha = datos.transaccion.fecha.substring(0, 10);
-    const concepto = datos.transaccion.concepto;
-
-    const mensaje = `📄 *RECIBO DE PAGO*\n` +
-      `━━━━━━━━━━━━━━━━━━\n` +
-      `🏠 *${negocio}*\n\n` +
-      `📋 Recibo N°: ${reciboNum}\n` +
-      `📅 Fecha: ${fecha}\n\n` +
-      `👤 Cliente: ${cliente}\n` +
-      `🚪 Habitación: ${habitacion}\n\n` +
-      `💰 *Total: $${monto}*\n\n` +
-      `📝 ${concepto}\n\n` +
-      `━━━━━━━━━━━━━━━━━━\n` +
-      `Gracias por su preferencia.`;
-
-    const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
-    window.open(url, '_blank');
+    const mensaje = `📄 Aquí tienes tu recibo N° ${datos.transaccion.numeroRecibo} de ${datos.config.nombre}. El PDF se ha descargado, adjúntalo por favor.`;
+    window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
+    setShareError(true);
   };
 
   return (
@@ -99,34 +113,49 @@ export const VistaPreviaRecibo = ({ datos, onClose }: VistaPreviaReciboProps) =>
           />
         </div>
 
-        <div className="flex gap-3 p-4 border-t border-neutral-200 dark:border-neutral-800">
-          <button
-            onClick={onClose}
-            className="py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-          >
-            Cerrar
-          </button>
-          <button
-            onClick={handleEnviarWhatsApp}
-            className="py-2.5 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
-          >
-            <MessageCircle size={18} />
-            WhatsApp
-          </button>
-          <button
-            onClick={handleDescargarPDF}
-            className="py-2.5 px-4 bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors flex items-center justify-center gap-2"
-          >
-            <Download size={18} />
-            PDF
-          </button>
-          <button
-            onClick={handleImprimir}
-            className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center justify-center gap-2"
-          >
-            <Printer size={18} />
-            Imprimir (A5)
-          </button>
+        <div className="flex flex-col gap-2 p-4 border-t border-neutral-200 dark:border-neutral-800">
+          {shareSuccess && (
+            <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 rounded-lg px-3 py-2">
+              <Check size={16} />
+              Recibo compartido exitosamente
+            </div>
+          )}
+          {shareError && (
+            <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
+              <AlertCircle size={16} />
+              PDF descargado. Adjúntalo manualmente en WhatsApp.
+            </div>
+          )}
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              className="py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+            >
+              Cerrar
+            </button>
+            <button
+              onClick={handleEnviarWhatsApp}
+              disabled={sendingWhatsapp}
+              className="py-2.5 px-4 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              <MessageCircle size={18} />
+              {sendingWhatsapp ? 'Enviando...' : 'WhatsApp'}
+            </button>
+            <button
+              onClick={handleDescargarPDF}
+              className="py-2.5 px-4 bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors flex items-center justify-center gap-2"
+            >
+              <Download size={18} />
+              PDF
+            </button>
+            <button
+              onClick={handleImprimir}
+              className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              <Printer size={18} />
+              Imprimir (A5)
+            </button>
+          </div>
         </div>
       </div>
     </div>

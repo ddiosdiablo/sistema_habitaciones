@@ -15,7 +15,7 @@ export interface DatosRecibo {
   descuento?: number;
 }
 
-export const generarReciboPDF = (datos: DatosRecibo): void => {
+function buildReciboDoc(datos: DatosRecibo): jsPDF {
   const { config, cliente, habitacion, tipoAlquiler, transaccion, fechaEntrada, fechaSalida, tarifaOriginal, descuento } = datos;
 
   const doc = new jsPDF();
@@ -121,7 +121,17 @@ export const generarReciboPDF = (datos: DatosRecibo): void => {
   doc.setFont('helvetica', 'italic');
   doc.text(config.leyendaPieRecibo, pageWidth / 2, yPos, { align: 'center' });
 
-  doc.save(`recibo_${transaccion.numeroRecibo}.pdf`);
+  return doc;
+}
+
+export const generarReciboPDF = (datos: DatosRecibo): void => {
+  const doc = buildReciboDoc(datos);
+  doc.save(`recibo_${datos.transaccion.numeroRecibo}.pdf`);
+};
+
+export const generarReciboBlob = (datos: DatosRecibo): Blob => {
+  const doc = buildReciboDoc(datos);
+  return doc.output('blob');
 };
 
 export const generarReciboHTML = (datos: DatosRecibo): string => {

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { X, Eye, Download, MessageCircle } from 'lucide-react';
+import { X, Eye, Download, MessageCircle, Check, AlertCircle } from 'lucide-react';
 import type { Habitacion, TipoAlquiler, MetodoPago } from '../types';
 import { useAppStore } from '../store/appStore';
 import { fechaHoy, fechaMasDias, fechaMasMeses } from '../utils/fechas';
-import { generarReciboPDF } from '../utils/generarReciboPDF';
+import { generarReciboPDF, generarReciboBlob } from '../utils/generarReciboPDF';
 import { VistaPreviaRecibo } from './VistaPreviaRecibo';
 import type { DatosRecibo } from '../utils/generarReciboPDF';
 import { formatearMoneda } from '../utils/formatearMoneda';
@@ -47,6 +47,9 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [mostrarRecibo, setMostrarRecibo] = useState(false);
   const [datosRecibo, setDatosRecibo] = useState<DatosRecibo | null>(null);
+  const [shareSuccess, setShareSuccess] = useState(false);
+  const [shareError, setShareError] = useState(false);
+  const [sendingWhatsapp, setSendingWhatsapp] = useState(false);
 
   useEffect(() => {
     if (tipoAlquiler === 'dia') {
@@ -558,10 +561,25 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
               </p>
             </div>
 
+            {shareSuccess && (
+              <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 rounded-lg px-3 py-2 mb-3">
+                <Check size={16} />
+                Recibo compartido exitosamente
+              </div>
+            )}
+            {shareError && (
+              <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 mb-3">
+                <AlertCircle size={16} />
+                PDF descargado. Adjúntalo manualmente en WhatsApp.
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => {
                   setShowSuccess(false);
+                  setShareSuccess(false);
+                  setShareError(false);
                   onClose();
                 }}
                 className="py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors text-sm"
@@ -583,15 +601,41 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
                 PDF
               </button>
               <button
-                onClick={() => {
-                  const telefono = datosRecibo.cliente.telefono.replace(/[^0-9+]/g, '');
-                  const mensaje = `📄 *RECIBO DE PAGO*\n━━━━━━━━━━━━━━━━━━\n🏠 *${datosRecibo.config.nombre}*\n\n📋 Recibo N°: ${datosRecibo.transaccion.numeroRecibo}\n📅 Fecha: ${datosRecibo.transaccion.fecha.substring(0, 10)}\n\n👤 ${datosRecibo.cliente.nombreCompleto}\n🚪 Habitación: ${datosRecibo.habitacion.numero}\n\n💰 *Total: ${formatearMoneda(datosRecibo.transaccion.monto)}*\n\n📝 ${datosRecibo.transaccion.concepto}\n\n━━━━━━━━━━━━━━━━━━\nGracias por su preferencia.`;
-                  window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
+                onClick={async () => {
+                  setSendingWhatsapp(true);
+                  setShareSuccess(false);
+                  setShareError(false);
+                  const blob = generarReciboBlob(datosRecibo);
+                  const file = new File([blob], `recibo_${datosRecibo.transaccion.numeroRecibo}.pdf`, { type: 'application/pdf' });
+                  if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                    try {
+                      await navigator.share({
+                        title: `Recibo ${datosRecibo.transaccion.numeroRecibo}`,
+                        text: `Recibo de pago - ${datosRecibo.config.nombre}`,
+                        files: [file],
+                      });
+                      setShareSuccess(true);
+                    } catch (err: any) {
+                      if (err.name !== 'AbortError') {
+                        generarReciboPDF(datosRecibo);
+                        const telefono = datosRecibo.cliente.telefono.replace(/[^0-9+]/g, '');
+                        window.open(`https://wa.me/${telefono}?text=${encodeURIComponent('Aquí tienes tu recibo. El PDF se ha descargado, adjúntalo por favor.')}`, '_blank');
+                        setShareError(true);
+                      }
+                    }
+                  } else {
+                    generarReciboPDF(datosRecibo);
+                    const telefono = datosRecibo.cliente.telefono.replace(/[^0-9+]/g, '');
+                    window.open(`https://wa.me/${telefono}?text=${encodeURIComponent('Aquí tienes tu recibo. El PDF se ha descargado, adjúntalo por favor.')}`, '_blank');
+                    setShareError(true);
+                  }
+                  setSendingWhatsapp(false);
                 }}
-                className="py-2.5 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                disabled={sendingWhatsapp}
+                className="py-2.5 px-4 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
               >
                 <MessageCircle size={18} />
-                WhatsApp
+                {sendingWhatsapp ? 'Enviando...' : 'WhatsApp'}
               </button>
             </div>
           </div>
