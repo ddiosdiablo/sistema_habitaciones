@@ -75,7 +75,7 @@ export const VistaPreviaRecibo = ({ datos, onClose }: VistaPreviaReciboProps) =>
   const fallbackWhatsApp = (datos: DatosRecibo) => {
     generarReciboPDF(datos);
     const telefono = datos.cliente.telefono.replace(/[^0-9+]/g, '');
-    const mensaje = `📄 Aquí tienes tu recibo N° ${datos.transaccion.numeroRecibo} de ${datos.config.nombre}. El PDF se ha descargado, adjúntalo por favor.`;
+    const mensaje = `Hola ${datos.cliente.nombreCompleto}, aquí tienes tu recibo N° ${datos.transaccion.numeroRecibo}.`;
     window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
     setShareError(true);
   };
@@ -121,9 +121,17 @@ export const VistaPreviaRecibo = ({ datos, onClose }: VistaPreviaReciboProps) =>
             </div>
           )}
           {shareError && (
-            <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
-              <AlertCircle size={16} />
-              PDF descargado. Adjúntalo manualmente en WhatsApp.
+            <div className="flex flex-col gap-1 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2">
+                <AlertCircle size={16} />
+                PDF descargado. Adjúntalo en WhatsApp:
+              </div>
+              <p className="text-xs text-amber-700 dark:text-amber-300 ml-6">
+                1. En WhatsApp, haz clic en 📎 (Adjuntar)
+              </p>
+              <p className="text-xs text-amber-700 dark:text-amber-300 ml-6">
+                2. Selecciona el archivo descargado
+              </p>
             </div>
           )}
           <div className="flex gap-3">

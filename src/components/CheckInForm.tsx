@@ -568,9 +568,17 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
               </div>
             )}
             {shareError && (
-              <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 mb-3">
-                <AlertCircle size={16} />
-                PDF descargado. Adjúntalo manualmente en WhatsApp.
+              <div className="flex flex-col gap-1 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg px-3 py-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <AlertCircle size={16} />
+                  PDF descargado. Adjúntalo en WhatsApp:
+                </div>
+                <p className="text-xs text-amber-700 dark:text-amber-300 ml-6">
+                  1. En WhatsApp, haz clic en 📎 (Adjuntar)
+                </p>
+                <p className="text-xs text-amber-700 dark:text-amber-300 ml-6">
+                  2. Selecciona el archivo descargado
+                </p>
               </div>
             )}
 
@@ -607,7 +615,7 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
                   setShareError(false);
                   const blob = generarReciboBlob(datosRecibo);
                   const file = new File([blob], `recibo_${datosRecibo.transaccion.numeroRecibo}.pdf`, { type: 'application/pdf' });
-                  if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                      if (navigator.share && navigator.canShare?.({ files: [file] })) {
                     try {
                       await navigator.share({
                         title: `Recibo ${datosRecibo.transaccion.numeroRecibo}`,
@@ -619,14 +627,14 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
                       if (err.name !== 'AbortError') {
                         generarReciboPDF(datosRecibo);
                         const telefono = datosRecibo.cliente.telefono.replace(/[^0-9+]/g, '');
-                        window.open(`https://wa.me/${telefono}?text=${encodeURIComponent('Aquí tienes tu recibo. El PDF se ha descargado, adjúntalo por favor.')}`, '_blank');
+                        window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(`Hola ${datosRecibo.cliente.nombreCompleto}, aquí tienes tu recibo N° ${datosRecibo.transaccion.numeroRecibo}.`)}`, '_blank');
                         setShareError(true);
                       }
                     }
                   } else {
                     generarReciboPDF(datosRecibo);
                     const telefono = datosRecibo.cliente.telefono.replace(/[^0-9+]/g, '');
-                    window.open(`https://wa.me/${telefono}?text=${encodeURIComponent('Aquí tienes tu recibo. El PDF se ha descargado, adjúntalo por favor.')}`, '_blank');
+                    window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(`Hola ${datosRecibo.cliente.nombreCompleto}, aquí tienes tu recibo N° ${datosRecibo.transaccion.numeroRecibo}.`)}`, '_blank');
                     setShareError(true);
                   }
                   setSendingWhatsapp(false);
