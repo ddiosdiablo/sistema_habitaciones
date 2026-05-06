@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Eye, Download } from 'lucide-react';
+import { X, Eye, Download, MessageCircle } from 'lucide-react';
 import type { Habitacion, TipoAlquiler, MetodoPago } from '../types';
 import { useAppStore } from '../store/appStore';
 import { fechaHoy, fechaMasDias, fechaMasMeses } from '../utils/fechas';
@@ -564,23 +564,34 @@ export const CheckInForm = ({ habitacion, onClose }: CheckInFormProps) => {
                   setShowSuccess(false);
                   onClose();
                 }}
-                className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors text-sm"
+                className="py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors text-sm"
               >
                 Cerrar
               </button>
               <button
                 onClick={() => setMostrarRecibo(true)}
-                className="flex-1 py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2 text-sm"
+                className="py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2 text-sm"
               >
                 <Eye size={18} />
-                Ver Recibo
+                Ver
               </button>
               <button
                 onClick={() => generarReciboPDF(datosRecibo)}
-                className="flex-1 py-2.5 px-4 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                className="py-2.5 px-4 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 font-medium rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors flex items-center justify-center gap-2 text-sm"
               >
                 <Download size={18} />
                 PDF
+              </button>
+              <button
+                onClick={() => {
+                  const telefono = datosRecibo.cliente.telefono.replace(/[^0-9+]/g, '');
+                  const mensaje = `📄 *RECIBO DE PAGO*\n━━━━━━━━━━━━━━━━━━\n🏠 *${datosRecibo.config.nombre}*\n\n📋 Recibo N°: ${datosRecibo.transaccion.numeroRecibo}\n📅 Fecha: ${datosRecibo.transaccion.fecha.substring(0, 10)}\n\n👤 ${datosRecibo.cliente.nombreCompleto}\n🚪 Habitación: ${datosRecibo.habitacion.numero}\n\n💰 *Total: ${formatearMoneda(datosRecibo.transaccion.monto)}*\n\n📝 ${datosRecibo.transaccion.concepto}\n\n━━━━━━━━━━━━━━━━━━\nGracias por su preferencia.`;
+                  window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
+                }}
+                className="py-2.5 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+              >
+                <MessageCircle size={18} />
+                WhatsApp
               </button>
             </div>
           </div>
