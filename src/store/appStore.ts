@@ -7,7 +7,6 @@ import type {
   Estadia,
   Transaccion,
   Gasto,
-  CategoriaGasto,
   ConfigNegocio,
   EstadoHabitacion,
 } from '../types';
@@ -38,6 +37,12 @@ interface AppState {
 
   addTransaccion: (transaccion: Omit<Transaccion, 'id' | 'numeroRecibo'>) => Promise<string>;
 
+  addGasto: (gasto: Omit<Gasto, 'id'>) => Promise<void>;
+  deleteGasto: (id: string) => Promise<void>;
+  getGastosDiarios: (fecha: string) => number;
+  getGastosSemanales: (fechaInicio: string, fechaFin: string) => number;
+  getGastosMensuales: (anio: number, mes: number) => number;
+
   getEstadiaActivaByHabitacion: (habitacionId: string) => Estadia | undefined;
   getEstadiasByCliente: (clienteId: string) => Estadia[];
   getTransaccionesByEstadia: (estadiaId: string) => Transaccion[];
@@ -56,7 +61,7 @@ interface AppState {
 
   clearTransacciones: () => Promise<void>;
 
-  syncToSupabase: () => Promise<{ habitaciones: number; clientes: number; estadias: number; transacciones: number }>;
+  syncToSupabase: () => Promise<{ habitaciones: number; clientes: number; estadias: number; transacciones: number; gastos: number }>;
 
   initDemo: () => void;
   loadFromSupabase: () => Promise<void>;
