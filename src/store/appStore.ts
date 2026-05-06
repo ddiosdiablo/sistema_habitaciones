@@ -533,10 +533,22 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'habita-gest-storage',
-      partialize: (state) => ({
+      storage: {
+        getItem: (name) => {
+          const value = sessionStorage.getItem(name);
+          return value ? JSON.parse(value) : null;
+        },
+        setItem: (name, value) => {
+          sessionStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: (name) => {
+          sessionStorage.removeItem(name);
+        },
+      },
+      partialize: (state: AppState) => ({
         darkMode: state.darkMode,
         isAuthenticated: state.isAuthenticated,
       }),
     }
-  )
+  ) as unknown as (set: any, get: any, store: any) => AppState,
 );

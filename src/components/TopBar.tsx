@@ -1,4 +1,4 @@
-import { Moon, Sun, Home, Menu } from 'lucide-react';
+import { Moon, Sun, Home, Menu, LogOut } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 
 interface TopBarProps {
@@ -7,7 +7,7 @@ interface TopBarProps {
 }
 
 export const TopBar = ({ sidebarCollapsed, onMenuToggle }: TopBarProps) => {
-  const { darkMode, toggleDarkMode } = useAppStore();
+  const { darkMode, toggleDarkMode, logout, config } = useAppStore();
 
   const obtenerSaludo = () => {
     const hora = new Date().getHours();
@@ -41,7 +41,7 @@ export const TopBar = ({ sidebarCollapsed, onMenuToggle }: TopBarProps) => {
                 {obtenerSaludo()}
               </span>
               <span className="text-sm font-medium text-slate-700 dark:text-slate-200 ml-2">
-                Bienvenido
+                {config.usuarioAdmin || 'Admin'}
               </span>
             </div>
           </div>
@@ -54,6 +54,14 @@ export const TopBar = ({ sidebarCollapsed, onMenuToggle }: TopBarProps) => {
             aria-label={darkMode ? 'Modo claro' : 'Modo oscuro'}
           >
             {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+          <button
+            onClick={logout}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors text-sm"
+            title="Cerrar sesión"
+          >
+            <LogOut size={18} />
+            <span className="hidden sm:inline">Cerrar sesión</span>
           </button>
         </div>
       </div>
