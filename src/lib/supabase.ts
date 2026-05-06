@@ -199,7 +199,7 @@ export const db = {
       async insert(data: Record<string, unknown> | Record<string, unknown>[]) {
         const items = Array.isArray(data) ? data : [data];
         const transformed = items.map((item) => toSnake(item, table));
-        const result = await supaRef.insert(transformed);
+        const result = await supaRef.insert(transformed).select();
         if (result.error) return result;
         if (result.data) {
           return {

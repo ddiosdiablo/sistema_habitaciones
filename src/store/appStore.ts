@@ -59,8 +59,6 @@ interface AppState {
   loadFromSupabase: () => Promise<void>;
 }
 
-const generarId = () => Math.random().toString(36).substring(2, 15);
-
 const fechaHoy = () => new Date().toISOString().split('T')[0];
 
 const configDefault: ConfigNegocio = {
@@ -151,16 +149,13 @@ export const useAppStore = create<AppState>()(
       },
 
       addHabitacion: async (habitacion) => {
-        const id = generarId();
-        const nueva = { ...habitacion, id };
-        
-        const { error } = await db.from('habitaciones').insert([nueva]);
+        const { data: inserted, error } = await db.from('habitaciones').insert([habitacion]);
         if (error) {
           console.error('Error adding habitacion:', error);
           alert(`Error al guardar la habitación: ${error.message}`);
           return;
         }
-        
+        const nueva = { ...habitacion, id: (inserted as any)[0].id };
         set((state) => ({ habitaciones: [...state.habitaciones, nueva] }));
       },
 
@@ -193,17 +188,15 @@ export const useAppStore = create<AppState>()(
       },
 
       addCliente: async (cliente) => {
-        const id = generarId();
-        const nuevo = { ...cliente, id, fechaRegistro: fechaHoy() };
-        
-        const { error } = await db.from('clientes').insert([nuevo]);
+        const nuevo = { ...cliente, fechaRegistro: fechaHoy() };
+        const { data: inserted, error } = await db.from('clientes').insert([nuevo]);
         if (error) {
           console.error('Error adding cliente:', error);
           alert(`Error al guardar el cliente: ${error.message}`);
           return;
         }
-        
-        set((state) => ({ clientes: [...state.clientes, nuevo] }));
+        const clienteConId = { ...nuevo, id: (inserted as any)[0].id };
+        set((state) => ({ clientes: [...state.clientes, clienteConId] }));
       },
 
       updateCliente: async (id, data) => {
@@ -235,14 +228,13 @@ export const useAppStore = create<AppState>()(
       },
 
       addEstadia: async (estadia) => {
-        const id = generarId();
-        
-        const { error } = await db.from('estadias').insert([{ ...estadia, id }]);
+        const { data: inserted, error } = await db.from('estadias').insert([{ ...estadia }]);
         if (error) {
           console.error('Error adding estadia:', error);
           alert(`Error al guardar la estadía: ${error.message}`);
           throw error;
         }
+        const id = (inserted as any)[0].id;
         
         await db.from('habitaciones')
           .update({ estado: 'ocupada' })
@@ -319,16 +311,16 @@ export const useAppStore = create<AppState>()(
       },
 
       addTransaccion: async (transaccion) => {
-        const id = generarId();
         const numeroRecibo = `R${get().config.proximoNumeroRecibo}`;
-        const nueva = { ...transaccion, id, numeroRecibo };
+        const nueva = { ...transaccion, numeroRecibo };
         
-        const { error } = await db.from('transacciones').insert([nueva]);
+        const { data: inserted, error } = await db.from('transacciones').insert([nueva]);
         if (error) {
           console.error('Error adding transaccion:', error);
           alert(`Error al guardar la transacción: ${error.message}`);
           throw error;
         }
+        const id = (inserted as any)[0].id;
         
         const configId = get().configId;
         if (configId) {
@@ -338,7 +330,7 @@ export const useAppStore = create<AppState>()(
         }
 
         set((state) => ({
-          transacciones: [...state.transacciones, nueva],
+          transacciones: [...state.transacciones, { ...nueva, id }],
           config: { ...state.config, proximoNumeroRecibo: state.config.proximoNumeroRecibo + 1 },
         }));
 
