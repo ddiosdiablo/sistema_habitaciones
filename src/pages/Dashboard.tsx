@@ -1,7 +1,7 @@
 import { BedDouble, Users, AlertCircle, Calendar } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { formatearMoneda } from '../utils/formatearMoneda';
-import { BarrasOcupacionChart } from '../components/BarrasOcupacionChart';
+import { SparklineDashboard } from '../components/SparklineDashboard';
 
 export const Dashboard = () => {
   const { habitaciones, clientes, estadias, getProximosVencimientos } = useAppStore();
@@ -25,7 +25,9 @@ export const Dashboard = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+      <SparklineDashboard />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Habitaciones</span>
@@ -36,9 +38,10 @@ export const Dashboard = () => {
           </div>
           <div className="text-xs text-neutral-500 dark:text-neutral-400">
             {ocupadas} ocupadas, {mantenimiento} mantenimiento
+          </div>
         </div>
 
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Clientes</span>
             <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-light" />
@@ -53,55 +56,47 @@ export const Dashboard = () => {
       </div>
 
       <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
-        <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
-          Ocupación por Habitación
-        </h2>
-        <BarrasOcupacionChart />
-      </div>
-
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
-            <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-              Próximos Vencimientos
-            </h2>
-          </div>
-          {proximosVencimientos.length > 0 ? (
-            <div className="space-y-3">
-              {proximosVencimientos.map((item) => (
-                <div
-                  key={item.estadia.id}
-                  className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-medium text-sm sm:text-base text-neutral-900 dark:text-neutral-100">
-                        {item.cliente.nombreCompleto}
-                      </p>
-                      <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
-                        Hab {item.habitacion.numero} -{' '}
-                        {item.estadia.tipo === 'dia' ? 'Diario' : 'Mensual'}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xs sm:text-sm font-medium text-amber-600 dark:text-amber-400">
-                        {formatearMoneda(item.estadia.saldoPendiente)}
-                      </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                        Vence: {item.estadia.fechaSalidaEstimada}
-                      </p>
-                    </div>
+        <div className="flex items-center gap-2 mb-4">
+          <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
+          <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+            Próximos Vencimientos
+          </h2>
+        </div>
+        {proximosVencimientos.length > 0 ? (
+          <div className="space-y-3">
+            {proximosVencimientos.map((item) => (
+              <div
+                key={item.estadia.id}
+                className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium text-sm sm:text-base text-neutral-900 dark:text-neutral-100">
+                      {item.cliente.nombreCompleto}
+                    </p>
+                    <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+                      Hab {item.habitacion.numero} -{' '}
+                      {item.estadia.tipo === 'dia' ? 'Diario' : 'Mensual'}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs sm:text-sm font-medium text-amber-600 dark:text-amber-400">
+                      {formatearMoneda(item.estadia.saldoPendiente)}
+                    </p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      Vence: {item.estadia.fechaSalidaEstimada}
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-neutral-500 dark:text-neutral-400">
-              <Calendar className="w-12 h-12 mx-auto mb-2 opacity-50" />
-              <p>No hay vencimientos próximos</p>
-            </div>
-          )}
-        </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-neutral-500 dark:text-neutral-400">
+            <Calendar className="w-12 h-12 mx-auto mb-2 opacity-50" />
+            <p>No hay vencimientos próximos</p>
+          </div>
+        )}
       </div>
 
       <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
