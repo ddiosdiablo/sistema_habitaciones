@@ -43,7 +43,7 @@ export const Sidebar = ({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
       )}
 
       <aside
-        className={`fixed top-0 h-full bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 transition-all duration-300 z-50
+        className={`fixed top-0 h-full bg-sky-50 dark:bg-neutral-900 border-r border-sky-100 dark:border-neutral-800 transition-all duration-300 z-50
           lg:left-0 lg:z-40
           ${mobileOpen ? 'left-0 z-50' : '-left-56 lg:left-0'}
           ${collapsed ? 'lg:w-16' : 'lg:w-56'}
@@ -51,22 +51,22 @@ export const Sidebar = ({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
         `}
       >
         <div className="flex flex-col h-full">
-          <div className="p-4 flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800">
+          <div className="p-4 flex items-center justify-between border-b border-sky-100 dark:border-neutral-800">
             {!collapsed && (
-              <h1 className="text-lg font-bold text-primary dark:text-primary-light">
+              <h1 className="text-lg font-bold text-blue-900 dark:text-primary-light">
                 {config.nombre}
               </h1>
             )}
             <div className="flex items-center gap-1">
               <button
                 onClick={onToggle}
-                className="hidden lg:block p-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500"
+                className="hidden lg:block p-1.5 rounded-lg hover:bg-sky-100 dark:hover:bg-neutral-800 text-neutral-500"
               >
                 {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
               </button>
               <button
                 onClick={onMobileClose}
-                className="lg:hidden p-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500"
+                className="lg:hidden p-1.5 rounded-lg hover:bg-sky-100 dark:hover:bg-neutral-800 text-neutral-500"
               >
                 <X size={18} />
               </button>
@@ -83,7 +83,7 @@ export const Sidebar = ({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
                   `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                     isActive
                       ? 'bg-primary/10 text-primary dark:text-primary-light font-medium'
-                      : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                      : 'text-neutral-600 dark:text-neutral-400 hover:bg-sky-100 dark:hover:bg-neutral-800'
                   }`
                 }
               >
