@@ -10,6 +10,7 @@ import { Configuracion } from './pages/Configuracion';
 import { HistorialRecibos } from './pages/HistorialRecibos';
 import { Gastos } from './pages/Gastos';
 import { Login } from './pages/Login';
+import { FinanceAuthPrompt } from './components/FinanceAuthPrompt';
 import { useAppStore } from './store/appStore';
 
 export const App = () => {
@@ -80,9 +81,9 @@ export const App = () => {
               <Route path="/" element={<Dashboard />} />
               <Route path="/habitaciones" element={<Habitaciones />} />
               <Route path="/clientes" element={<Clientes />} />
-              <Route path="/ingresos" element={<Ingresos />} />
+              <Route path="/ingresos" element={<FinanceAuthPrompt><Ingresos /></FinanceAuthPrompt>} />
               <Route path="/recibos" element={<HistorialRecibos />} />
-              <Route path="/gastos" element={<Gastos />} />
+              <Route path="/gastos" element={<FinanceAuthPrompt><Gastos /></FinanceAuthPrompt>} />
               <Route path="/configuracion" element={<Configuracion />} />
               <Route path="/login" element={<Navigate to="/" replace />} />
             </Routes>

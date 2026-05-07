@@ -22,7 +22,6 @@ interface AppState {
   darkMode: boolean;
   isLoading: boolean;
   isAuthenticated: boolean;
-
   addHabitacion: (habitacion: Omit<Habitacion, 'id'>) => Promise<void>;
   updateHabitacion: (id: string, data: Partial<Habitacion>) => Promise<void>;
   deleteHabitacion: (id: string) => Promise<void>;
@@ -97,7 +96,6 @@ export const useAppStore = create<AppState>()(
       darkMode: false,
       isLoading: true,
       isAuthenticated: false,
-
       loadFromSupabase: async () => {
         set({ isLoading: true });
         try {

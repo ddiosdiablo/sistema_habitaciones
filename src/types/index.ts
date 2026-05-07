@@ -76,6 +76,7 @@ export interface ConfigNegocio {
   proximoNumeroRecibo: number;
   usuarioAdmin?: string;
   contrasenaAdmin?: string;
+  contrasenaFinanzas?: string;
   horaCheckout?: string;
 }
 

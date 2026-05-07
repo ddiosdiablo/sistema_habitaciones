@@ -23,6 +23,7 @@ export const Configuracion = () => {
     tariffMensualDefault: config.tariffMensualDefault,
     usuarioAdmin: config.usuarioAdmin || '',
     contrasenaAdmin: config.contrasenaAdmin || '',
+    contrasenaFinanzas: config.contrasenaFinanzas || '',
     horaCheckout: config.horaCheckout || '13:00',
     proximoNumeroRecibo: config.proximoNumeroRecibo,
   });
@@ -343,6 +344,22 @@ export const Configuracion = () => {
           />
           <p className="text-xs text-neutral-500 mt-1">
             Se requiere esta contraseña para iniciar sesión
+          </p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+            Contraseña de Finanzas
+          </label>
+          <input
+            type="text"
+            value={formData.contrasenaFinanzas}
+            onChange={(e) => setFormData({ ...formData, contrasenaFinanzas: e.target.value })}
+            placeholder="Dejar vacío para sin restricción"
+            className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100"
+          />
+          <p className="text-xs text-neutral-500 mt-1">
+            Se requiere para acceder a Ingresos y Gastos
           </p>
         </div>
       </div>
