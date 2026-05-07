@@ -118,6 +118,21 @@ CREATE TABLE transacciones (
 );
 
 -- ============================================
+-- 6. Gastos (Expenses)
+-- Maps to Gasto type
+-- ============================================
+CREATE TABLE gastos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  fecha DATE NOT NULL,
+  categoria TEXT NOT NULL CHECK (categoria IN ('mantenimiento', 'suministros', 'servicios', 'personal', 'otro')),
+  descripcion TEXT NOT NULL,
+  monto DECIMAL(10,2) NOT NULL,
+  metodo_pago TEXT NOT NULL CHECK (metodo_pago IN ('efectivo', 'transferencia', 'tarjeta', 'otro')),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================
 -- Enable Row Level Security
 -- ============================================
 ALTER TABLE config ENABLE ROW LEVEL SECURITY;
@@ -125,6 +140,7 @@ ALTER TABLE habitaciones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE clientes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE estadias ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transacciones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE gastos ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
 -- RLS Policies (allow all - can be restricted later)
@@ -134,6 +150,7 @@ CREATE POLICY "Allow all on habitaciones" ON habitaciones FOR ALL USING (true) W
 CREATE POLICY "Allow all on clientes" ON clientes FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all on estadias" ON estadias FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all on transacciones" ON transacciones FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all on gastos" ON gastos FOR ALL USING (true) WITH CHECK (true);
 
 -- ============================================
 -- Insert default config

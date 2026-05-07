@@ -6,91 +6,80 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // ============================================================
-// Mapeo de campos: camelCase (TypeScript) <-> snake_case (Supabase)
+// Conversión automática camelCase <-> snake_case
 // ============================================================
 
-const fieldMaps: Record<string, Record<string, string>> = {
+const EXCEPCIONES: Record<string, Record<string, string>> = {
   config: {
-    nombre: 'nombre',
-    direccion: 'direccion',
-    telefono: 'telefono',
-    email: 'email',
-    leyendaPieRecibo: 'leyenda_pie_recibo',
-    impuestoRecibo: 'impuesto_recibo',
     tarifaDiariaDefault: 'tarifa_diaria_default',
     tariffMensualDefault: 'tariff_mensual_default',
     proximoNumeroRecibo: 'proximo_numero_recibo',
     usuarioAdmin: 'usuario_admin',
     contrasenaAdmin: 'contrasena_admin',
     horaCheckout: 'hora_checkout',
-  },
-  habitaciones: {
-    numero: 'numero',
-    tipo: 'tipo',
-    tarifaDiaria: 'tarifa_diaria',
-    tariffMensual: 'tariff_mensual',
-    estado: 'estado',
-    descripcion: 'descripcion',
+    leyendaPieRecibo: 'leyenda_pie_recibo',
+    impuestoRecibo: 'impuesto_recibo',
   },
   clientes: {
     nombreCompleto: 'nombre_completo',
-    dni: 'dni',
-    telefono: 'telefono',
-    correo: 'correo',
-    nacionalidad: 'nacionalidad',
     fechaRegistro: 'fecha_registro',
   },
   estadias: {
     habitacionId: 'habitacion_id',
     clienteId: 'cliente_id',
-    tipo: 'tipo',
     fechaEntrada: 'fecha_entrada',
     fechaSalidaEstimada: 'fecha_salida_estimada',
     fechaSalidaReal: 'fecha_salida_real',
     tarifaOriginal: 'tarifa_original',
-    descuento: 'descuento',
     tarifaAplicada: 'tarifa_aplicada',
     totalPagado: 'total_pagado',
     saldoPendiente: 'saldo_pendiente',
     estaPagado: 'esta_pagado',
-    estado: 'estado',
   },
   transacciones: {
     estadiaId: 'estadia_id',
     habitacionId: 'habitacion_id',
     clienteId: 'cliente_id',
     numeroRecibo: 'numero_recibo',
-    tipo: 'tipo',
-    monto: 'monto',
     metodoPago: 'metodo_pago',
-    concepto: 'concepto',
-    fecha: 'fecha',
+  },
+  habitaciones: {
+    tarifaDiaria: 'tarifa_diaria',
+    tariffMensual: 'tariff_mensual',
+  },
+  gastos: {
+    metodoPago: 'metodo_pago',
   },
 };
 
+function camelToSnake(key: string): string {
+  const result = key.replace(/[A-Z]/g, (l) => `_${l.toLowerCase()}`);
+  return result;
+}
+
+function snakeToCamel(key: string): string {
+  return key.replace(/_([a-z])/g, (_, l) => l.toUpperCase());
+}
+
 function toSnake(obj: Record<string, unknown>, table: string): Record<string, unknown> {
-  const map = fieldMaps[table];
-  if (!map) return obj;
+  const exc = EXCEPCIONES[table] ?? {};
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(obj)) {
-    const snakeKey = map[key] ?? key;
-    result[snakeKey] = value;
+    result[exc[key] ?? camelToSnake(key)] = value;
   }
   return result;
 }
 
 function toCamel(obj: Record<string, unknown> | null, table: string): Record<string, unknown> | null {
   if (!obj) return null;
-  const map = fieldMaps[table];
-  if (!map) return obj;
-  const reverseMap: Record<string, string> = {};
-  for (const [camel, snake] of Object.entries(map)) {
-    reverseMap[snake] = camel;
+  const exc = EXCEPCIONES[table] ?? {};
+  const reverseExc: Record<string, string> = {};
+  for (const [camel, snake] of Object.entries(exc)) {
+    reverseExc[snake] = camel;
   }
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(obj)) {
-    const camelKey = reverseMap[key] ?? key;
-    result[camelKey] = value;
+    result[reverseExc[key] ?? snakeToCamel(key)] = value;
   }
   return result;
 }
@@ -118,24 +107,23 @@ class SelectQuery<T> implements PromiseLike<DbResult<T | T[]>> {
     this.table = table;
   }
 
+  private dbCol(column: string): string {
+    const exc = EXCEPCIONES[this.table] ?? {};
+    return exc[column] ?? camelToSnake(column);
+  }
+
   eq(column: string, value: unknown): this {
-    const map = fieldMaps[this.table];
-    const dbColumn = map?.[column] ?? column;
-    this.builder = this.builder.eq(dbColumn, value) as any;
+    this.builder = this.builder.eq(this.dbCol(column), value) as any;
     return this;
   }
 
   neq(column: string, value: unknown): this {
-    const map = fieldMaps[this.table];
-    const dbColumn = map?.[column] ?? column;
-    this.builder = this.builder.neq(dbColumn, value) as any;
+    this.builder = this.builder.neq(this.dbCol(column), value) as any;
     return this;
   }
 
   order(column: string, options?: { ascending?: boolean }): this {
-    const map = fieldMaps[this.table];
-    const dbColumn = map?.[column] ?? column;
-    this.builder = this.builder.order(dbColumn, options) as any;
+    this.builder = this.builder.order(this.dbCol(column), options) as any;
     return this;
   }
 
@@ -145,9 +133,7 @@ class SelectQuery<T> implements PromiseLike<DbResult<T | T[]>> {
   }
 
   in(column: string, values: unknown[]): this {
-    const map = fieldMaps[this.table];
-    const dbColumn = map?.[column] ?? column;
-    this.builder = this.builder.in(dbColumn, values) as any;
+    this.builder = this.builder.in(this.dbCol(column), values) as any;
     return this;
   }
 
@@ -216,9 +202,9 @@ export const db = {
         const transformed = toSnake(data, table);
         return {
           eq(column: string, value: unknown) {
-            const map = fieldMaps[table];
-            const dbColumn = map?.[column] ?? column;
-            return supaRef.update(transformed).eq(dbColumn, value);
+            const exc = EXCEPCIONES[table] ?? {};
+            const dbCol = exc[column] ?? camelToSnake(column);
+            return supaRef.update(transformed).eq(dbCol, value);
           },
         };
       },
@@ -226,14 +212,14 @@ export const db = {
       delete() {
         return {
           eq(column: string, value: unknown) {
-            const map = fieldMaps[table];
-            const dbColumn = map?.[column] ?? column;
-            return supaRef.delete().eq(dbColumn, value);
+            const exc = EXCEPCIONES[table] ?? {};
+            const dbCol = exc[column] ?? camelToSnake(column);
+            return supaRef.delete().eq(dbCol, value);
           },
           neq(column: string, value: unknown) {
-            const map = fieldMaps[table];
-            const dbColumn = map?.[column] ?? column;
-            return supaRef.delete().neq(dbColumn, value);
+            const exc = EXCEPCIONES[table] ?? {};
+            const dbCol = exc[column] ?? camelToSnake(column);
+            return supaRef.delete().neq(dbCol, value);
           },
         };
       },
