@@ -1,14 +1,10 @@
-import { useState } from 'react';
 import { BedDouble, Users, AlertCircle, Calendar } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { formatearMoneda } from '../utils/formatearMoneda';
-import { OcupacionPorHabitacionChart } from '../components/OcupacionPorHabitacionChart';
-import { TasaOcupacionDiariaChart } from '../components/TasaOcupacionDiariaChart';
-import { OcupacionPorTipoChart } from '../components/OcupacionPorTipoChart';
+import { BarrasOcupacionChart } from '../components/BarrasOcupacionChart';
 
 export const Dashboard = () => {
   const { habitaciones, clientes, estadias, getProximosVencimientos } = useAppStore();
-  const [chartTipo, setChartTipo] = useState<'habitacion' | 'tasa' | 'tipo'>('habitacion');
 
   const disponibles = habitaciones.filter((h) => h.estado === 'disponible').length;
   const ocupadas = habitaciones.filter((h) => h.estado === 'ocupada').length;
@@ -17,25 +13,6 @@ export const Dashboard = () => {
   const proximosVencimientos = getProximosVencimientos(7);
 
   const estadiasActivas = estadias.filter((e) => e.estado === 'activa');
-
-  const renderChart = () => {
-    switch (chartTipo) {
-      case 'habitacion':
-        return <OcupacionPorHabitacionChart />;
-      case 'tasa':
-        return <TasaOcupacionDiariaChart />;
-      case 'tipo':
-        return <OcupacionPorTipoChart />;
-      default:
-        return <OcupacionPorHabitacionChart />;
-    }
-  };
-
-  const chartLabels: Record<string, string> = {
-    habitacion: 'Ocupación por Habitación',
-    tasa: 'Tasa de Ocupación Diaria',
-    tipo: 'Ocupación por Tipo',
-  };
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -59,10 +36,9 @@ export const Dashboard = () => {
           </div>
           <div className="text-xs text-neutral-500 dark:text-neutral-400">
             {ocupadas} ocupadas, {mantenimiento} mantenimiento
-          </div>
         </div>
 
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Clientes</span>
             <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-light" />
@@ -77,48 +53,13 @@ export const Dashboard = () => {
       </div>
 
       <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-            {chartLabels[chartTipo]}
-          </h2>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setChartTipo('habitacion')}
-              className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors ${
-                chartTipo === 'habitacion'
-                  ? 'bg-primary text-white'
-                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
-              }`}
-            >
-              Habitación
-            </button>
-            <button
-              onClick={() => setChartTipo('tasa')}
-              className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors ${
-                chartTipo === 'tasa'
-                  ? 'bg-primary text-white'
-                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
-              }`}
-            >
-              Tasa
-            </button>
-            <button
-              onClick={() => setChartTipo('tipo')}
-              className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors ${
-                chartTipo === 'tipo'
-                  ? 'bg-primary text-white'
-                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
-              }`}
-            >
-              Tipo
-            </button>
-          </div>
-        </div>
-        {renderChart()}
+        <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
+          Ocupación por Habitación
+        </h2>
+        <BarrasOcupacionChart />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
             <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
