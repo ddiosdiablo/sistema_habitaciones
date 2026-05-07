@@ -1,27 +1,41 @@
 import { useState } from 'react';
-import { BedDouble, Users, DollarSign, Calendar, AlertCircle } from 'lucide-react';
+import { BedDouble, Users, AlertCircle, Calendar } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { formatearMoneda } from '../utils/formatearMoneda';
-import { fechaHoy, getSemanaActual, getMesActual } from '../utils/fechas';
-import { IngresosChart } from '../components/IngresosChart';
+import { OcupacionPorHabitacionChart } from '../components/OcupacionPorHabitacionChart';
+import { TasaOcupacionDiariaChart } from '../components/TasaOcupacionDiariaChart';
+import { OcupacionPorTipoChart } from '../components/OcupacionPorTipoChart';
 
 export const Dashboard = () => {
-  const { habitaciones, clientes, estadias, getIngresosDiarios, getIngresosSemanales, getIngresosMensuales, getProximosVencimientos } = useAppStore();
-  const [chartTipo, setChartTipo] = useState<'semanal' | 'mensual'>('semanal');
+  const { habitaciones, clientes, estadias, getProximosVencimientos } = useAppStore();
+  const [chartTipo, setChartTipo] = useState<'habitacion' | 'tasa' | 'tipo'>('habitacion');
 
   const disponibles = habitaciones.filter((h) => h.estado === 'disponible').length;
   const ocupadas = habitaciones.filter((h) => h.estado === 'ocupada').length;
   const mantenimiento = habitaciones.filter((h) => h.estado === 'mantenimiento').length;
 
-  const ingresosDia = getIngresosDiarios(fechaHoy());
-  const { inicio: semanaInicio, fin: semanaFin } = getSemanaActual();
-  const ingresosSemana = getIngresosSemanales(semanaInicio, semanaFin);
-  const { anio, mes } = getMesActual();
-  const ingresosMes = getIngresosMensuales(anio, mes);
-
   const proximosVencimientos = getProximosVencimientos(7);
 
   const estadiasActivas = estadias.filter((e) => e.estado === 'activa');
+
+  const renderChart = () => {
+    switch (chartTipo) {
+      case 'habitacion':
+        return <OcupacionPorHabitacionChart />;
+      case 'tasa':
+        return <TasaOcupacionDiariaChart />;
+      case 'tipo':
+        return <OcupacionPorTipoChart />;
+      default:
+        return <OcupacionPorHabitacionChart />;
+    }
+  };
+
+  const chartLabels: Record<string, string> = {
+    habitacion: 'Ocupación por Habitación',
+    tasa: 'Tasa de Ocupación Diaria',
+    tipo: 'Ocupación por Tipo',
+  };
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -34,7 +48,7 @@ export const Dashboard = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Habitaciones</span>
@@ -60,63 +74,50 @@ export const Dashboard = () => {
             {estadiasActivas.length} estadías activas
           </div>
         </div>
+      </div>
 
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Ingresos Hoy</span>
-            <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-light" />
-          </div>
-          <div className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-            {formatearMoneda(ingresosDia)}
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+            {chartLabels[chartTipo]}
+          </h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setChartTipo('habitacion')}
+              className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors ${
+                chartTipo === 'habitacion'
+                  ? 'bg-primary text-white'
+                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
+              }`}
+            >
+              Habitación
+            </button>
+            <button
+              onClick={() => setChartTipo('tasa')}
+              className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors ${
+                chartTipo === 'tasa'
+                  ? 'bg-primary text-white'
+                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
+              }`}
+            >
+              Tasa
+            </button>
+            <button
+              onClick={() => setChartTipo('tipo')}
+              className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors ${
+                chartTipo === 'tipo'
+                  ? 'bg-primary text-white'
+                  : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
+              }`}
+            >
+              Tipo
+            </button>
           </div>
         </div>
-
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">Ingresos Mes</span>
-            <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-primary dark:text-primary-light" />
-          </div>
-          <div className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100">
-            {formatearMoneda(ingresosMes)}
-          </div>
-          <div className="text-xs text-neutral-500 dark:text-neutral-400">
-            Semana: {formatearMoneda(ingresosSemana)}
-          </div>
-        </div>
+        {renderChart()}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base sm:text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-              Ingresos
-            </h2>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setChartTipo('semanal')}
-                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors ${
-                  chartTipo === 'semanal'
-                    ? 'bg-primary text-white'
-                    : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
-                }`}
-              >
-                Semana
-              </button>
-              <button
-                onClick={() => setChartTipo('mensual')}
-                className={`px-2 sm:px-3 py-1 text-xs sm:text-sm rounded-lg transition-colors ${
-                  chartTipo === 'mensual'
-                    ? 'bg-primary text-white'
-                    : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400'
-                }`}
-              >
-                Mes
-              </button>
-            </div>
-          </div>
-          <IngresosChart tipo={chartTipo} />
-        </div>
-
         <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-3 sm:p-4 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
