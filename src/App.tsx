@@ -11,6 +11,7 @@ import { HistorialRecibos } from './pages/HistorialRecibos';
 import { Gastos } from './pages/Gastos';
 import { Login } from './pages/Login';
 import { FinanceAuthPrompt } from './components/FinanceAuthPrompt';
+import { InstallPrompt } from './components/InstallPrompt';
 import { useAppStore } from './store/appStore';
 
 export const App = () => {
@@ -89,6 +90,7 @@ export const App = () => {
             </Routes>
           </div>
         </main>
+        <InstallPrompt />
       </div>
     </BrowserRouter>
   );

@@ -5,6 +5,10 @@ node_modules/
 
 # Build
 dist/
+public/pwa-*.png
+public/maskable-icon-*.png
+public/favicon.ico
+public/apple-touch-icon-*.png
 build/
 
 # Local env files
