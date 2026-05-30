@@ -490,12 +490,18 @@ export const useAppStore = create<AppState>()(
       },
 
       getProximosVencimientos: (dias) => {
+        const hoy = new Date();
         const fechaLimite = new Date();
         fechaLimite.setDate(fechaLimite.getDate() + dias);
         const fechaStr = fechaLimite.toISOString().split('T')[0];
 
         return get()
-          .estadias.filter((e) => e.estado === 'activa' && e.tipo === 'mes' && !e.estaPagado && e.fechaSalidaEstimada <= fechaStr)
+          .estadias.filter((e) => {
+            if (e.estado !== 'activa') return false;
+            const venceHoy = e.fechaSalidaEstimada <= fechaStr;
+            const yaVencido = e.fechaSalidaEstimada < hoy.toISOString().split('T')[0];
+            return venceHoy || yaVencido;
+          })
           .map((estadia) => ({
             estadia,
             cliente: get().clientes.find((c) => c.id === estadia.clienteId)!,
