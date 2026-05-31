@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, Download, Eye, Search } from 'lucide-react';
+import { FileText, Download, Eye, Search, Trash2 } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { generarReciboPDF } from '../utils/generarReciboPDF';
 import type { DatosRecibo } from '../utils/generarReciboPDF';
@@ -8,7 +8,7 @@ import { formatoFechaTimeStamp } from '../utils/fechas';
 import { formatearMoneda } from '../utils/formatearMoneda';
 
 export const HistorialRecibos = () => {
-  const { transacciones, clientes, habitaciones, estadias, config } = useAppStore();
+  const { transacciones, clientes, habitaciones, estadias, config, deleteTransaccion } = useAppStore();
 
   const [busqueda, setBusqueda] = useState('');
   const [reciboSeleccionado, setReciboSeleccionado] = useState<DatosRecibo | null>(null);
@@ -72,6 +72,12 @@ export const HistorialRecibos = () => {
     };
 
     generarReciboPDF(datos);
+  };
+
+  const handleEliminarRecibo = (id: string, numeroRecibo?: string) => {
+    if (window.confirm(`¿Eliminar recibo ${numeroRecibo || ''}? No se puede deshacer.`)) {
+      deleteTransaccion(id);
+    }
   };
 
   return (
@@ -159,6 +165,13 @@ export const HistorialRecibos = () => {
                           title="Descargar PDF"
                         >
                           <Download size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleEliminarRecibo(t.id, t.numeroRecibo)}
+                          className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 text-neutral-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                          title="Eliminar recibo"
+                        >
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>

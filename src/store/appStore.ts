@@ -35,6 +35,7 @@ interface AppState {
   endEstadia: (id: string, fechaSalida: string, totalPagado: number, estaPagado: boolean) => Promise<void>;
 
   addTransaccion: (transaccion: Omit<Transaccion, 'id' | 'numeroRecibo'>) => Promise<string>;
+  deleteTransaccion: (id: string) => Promise<void>;
 
   addGasto: (gasto: Omit<Gasto, 'id'>) => Promise<void>;
   deleteGasto: (id: string) => Promise<void>;
@@ -348,6 +349,18 @@ export const useAppStore = create<AppState>()(
         }));
 
         return numeroRecibo;
+      },
+
+      deleteTransaccion: async (id: string) => {
+        const { error } = await db.from('transacciones').delete().eq('id', id);
+        if (error) {
+          console.error('Error deleting transaccion:', error);
+          alert(`Error al eliminar la transacción: ${error.message}`);
+          return;
+        }
+        set((state) => ({
+          transacciones: state.transacciones.filter((t) => t.id !== id),
+        }));
       },
 
       addGasto: async (gasto: Omit<Gasto, 'id'>) => {
