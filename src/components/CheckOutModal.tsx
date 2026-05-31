@@ -57,27 +57,18 @@ const [montoPagado, setMontoPagado] = useState(estadia.totalPagado);
     setLoading(true);
 
     try {
-      if (estaPagado && montoPagado > 0) {
-        await addTransaccion({
-          estadiaId: estadia.id,
-          habitacionId: habitacion.id,
-          clienteId: cliente.id,
-          tipo: 'checkout',
-          monto: montoPagado,
-          metodoPago,
-          fecha: new Date().toISOString(),
-          concepto: `Checkout - Hab ${habitacion.numero} - ${diasReales} día(s)`,
-        });
-      } else if (saldoPendiente > 0 && !estaPagado) {
+      const pagoAdicional = montoPagado - estadia.totalPagado;
+
+      if (pagoAdicional > 0) {
         await addTransaccion({
           estadiaId: estadia.id,
           habitacionId: habitacion.id,
           clienteId: cliente.id,
           tipo: 'pago_parcial',
-          monto: montoPagado,
+          monto: pagoAdicional,
           metodoPago,
           fecha: new Date().toISOString(),
-          concepto: `Pago parcial checkout - Hab ${habitacion.numero}`,
+          concepto: `Pago adicional checkout - Hab ${habitacion.numero}`,
         });
       }
 
