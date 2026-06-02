@@ -166,12 +166,18 @@ export const HabitacionCard = ({
       </div>
 
       {cliente && estadia && (
-        <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800">
+        <div className="pt-3 border-t border-neutral-200 dark:border-neutral-800 space-y-1">
           <p className="text-xs sm:text-sm font-medium text-neutral-900 dark:text-neutral-100 truncate">
             {cliente.nombreCompleto}
           </p>
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
             DNI: {cliente.dni}
+          </p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            Ingreso: {estadia.fechaEntrada}
+          </p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            Salida: {estadia.fechaSalidaEstimada}
           </p>
         </div>
       )}
